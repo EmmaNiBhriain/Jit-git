@@ -1,6 +1,10 @@
 package de.othr.ajp;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Jit {
 
@@ -19,9 +23,16 @@ public class Jit {
      * The staging subdirectory stores the data structure that holds the staging area.
      * The objects subdirectory stores objects after a commit.
      */
-    public void init(){
+    public static void init(Path pathForRepository){
 
-    }
+        //TODO get the current path
+        try{
+            Files.createDirectories(Paths.get(pathForRepository.toString()));
+        }
+        catch (IOException e) {
+            System.out.println("Error creating directory");
+        }
+            }
 
     /**
      * Remove a file fromm the staging area
@@ -33,7 +44,7 @@ public class Jit {
     /**
      * If a file exists, add it to the staging area to be included in the next commit.
      */
-    public void add(File filename){
+    public static void add(File filename){
 
     }
 
