@@ -27,7 +27,10 @@ public class Jit {
 
         //TODO get the current path
         try{
-            Files.createDirectories(Paths.get(pathForRepository.toString()));
+            Files.createDirectories(Paths.get( ".jit"));
+            Files.createDirectories(Paths.get(".jit/objects"));
+            Files.createDirectories(Paths.get(".jit/staging"));
+
         }
         catch (IOException e) {
             System.out.println("Error creating directory");
