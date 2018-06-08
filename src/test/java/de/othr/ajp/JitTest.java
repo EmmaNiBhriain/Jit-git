@@ -28,13 +28,10 @@ public class JitTest {
      */
     @Test
     public void initTest(){
-        Path jitLocation = Paths.get("othajpjit/.jit");
-        System.out.println(jitLocation.toString());
 
-        assertFalse(Files.exists(Paths.get("othajpjit/.jit"))); //check that the .jit directory does not exist before the init command is called
+        assertFalse(Files.exists(Paths.get(".jit"))); //check that the .jit directory does not exist before the init command is called
 
-        Path path = FileSystems.getDefault().getPath("../../../..");
-        init(path); //call the init command to create a repository
+        init(); //call the init command to create a repository
         assertTrue(Files.exists(Paths.get(".jit"))); //check that the .jit directory is created in the project folder
 
         assertTrue(Files.exists(Paths.get(".jit/objects"))); //check that the .jit directory contains the directory "objects"

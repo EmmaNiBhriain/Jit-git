@@ -7,13 +7,22 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Jit {
+    private MerkleTree merkleTree;
+
+    /**
+     * Constructor that takes an instance of merkleTree object as a constructor and assigns the value to a merkleTree variable
+     * @param merkleTree
+     */
+    public Jit(MerkleTree merkleTree){
+        this.merkleTree = merkleTree;
+    }
 
     /**
      * Store the files in the staging area to the objects subdirectory.
-     * @param comnent
+     * @param comment
      * @return
      */
-    public void commit(String comnent){
+    public void commit(String comment){
 
     }
 
@@ -23,9 +32,8 @@ public class Jit {
      * The staging subdirectory stores the data structure that holds the staging area.
      * The objects subdirectory stores objects after a commit.
      */
-    public static void init(Path pathForRepository){
+    public static void init(){
 
-        //TODO get the current path
         try{
             Files.createDirectories(Paths.get( ".jit"));
             Files.createDirectories(Paths.get(".jit/objects"));
@@ -48,6 +56,7 @@ public class Jit {
      * If a file exists, add it to the staging area to be included in the next commit.
      */
     public static void add(File filename){
+
 
     }
 

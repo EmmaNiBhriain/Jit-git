@@ -19,6 +19,7 @@ public class MerkleTree<T> {
         this.hashUtil = hashUtil;
     }
 
+
     /**
      * Add either a left and a right child node or a left and a right subtree to the Merkle tree object
      * Get the hash of the two children, concatenate them and use this to get the hash of the tree root
@@ -43,6 +44,16 @@ public class MerkleTree<T> {
             hashOfNode = hashUtil.byteArrayToHexString(combinedHashOfChildren.getBytes()); //get the hash of the combined hash of the child tree nodes
         else
             System.out.println("combinedHashOfChildren has not been calculated");
+    }
+
+    /**
+     * TODO check if this is needed
+     * Method for adding a single node to the tree
+     * @param singleChild
+     */
+    public void addChild(T singleChild){
+        if((this.leftChildNode.equals(null) && this.rightChildNode.equals(null)) && (this.leftChildTree.equals(null)  && this.rightChildTree.equals(null))){
+        }
     }
 
 
