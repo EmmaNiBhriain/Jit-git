@@ -5,6 +5,15 @@ import java.security.NoSuchAlgorithmException;
 
 public class HashUtil {
 
+    public HashUtil(){
+
+    }
+
+    /**
+     * Return a String representing the SHA-1 hash of the byte array
+     * @param content
+     * @return
+     */
     public static String byteArrayToHexString(byte[] content) {
 
         try {

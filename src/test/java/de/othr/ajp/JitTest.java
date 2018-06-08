@@ -55,7 +55,7 @@ public class JitTest {
             Files.delete(Paths.get(".jit"));
         }
         catch (IOException e){
-
+            System.out.println("Could not delete these directories" + e);
         }
     }
     /**
