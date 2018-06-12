@@ -1,8 +1,5 @@
 package de.othr.ajp;
 
-
-import java.io.File;
-
 public class MerkleTree<T> {
 
     private String hashOfNode;
@@ -53,7 +50,12 @@ public class MerkleTree<T> {
      */
     public void addChild(T singleChild){
         if((this.leftChildNode.equals(null) && this.rightChildNode.equals(null)) && (this.leftChildTree.equals(null)  && this.rightChildTree.equals(null))){
+            //
         }
+    }
+
+    public void remove(T node){
+
     }
 
 

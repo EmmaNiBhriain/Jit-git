@@ -9,7 +9,7 @@ public class UserInterface {
     private Scanner input;
 
     public UserInterface(){
-        this.menuChoice();
+        menuChoice();
     }
 
     /**
@@ -17,6 +17,7 @@ public class UserInterface {
      */
     public void menuChoice(){
         String command = consoleReader().toLowerCase().trim();
+        System.out.println(command);
         while(!command.equals(null)){
 
             if(command.startsWith("jit add")){
@@ -67,13 +68,20 @@ public class UserInterface {
      */
     public String consoleReader(){
         StringBuffer userInput = new StringBuffer("");
-        input = new Scanner(System.in);
+
         System.out.println("Please enter a command");
 
+        input = new Scanner(System.in);
+        System.out.println(input.toString());
         while(input.hasNext()){
-            userInput = userInput.append(input.next()+" ");
+            userInput.append(input.next() + " ");
+            System.out.println(userInput.toString());
         }
 
+        if(true){
+            System.out.println("input: " + userInput.toString());
+
+        }
 
         String option = userInput.toString();
         return option;

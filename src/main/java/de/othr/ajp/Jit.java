@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Jit {
-    private MerkleTree merkleTree;
+    private static MerkleTree merkleTree;
 
     /**
      * Constructor that takes an instance of merkleTree object as a constructor and assigns the value to a merkleTree variable
@@ -49,6 +49,14 @@ public class Jit {
      * Remove a file fromm the staging area
      */
     public void remove(File filename){
+        if(filename.exists()){
+            System.out.println("File exists and will be removed from jit");
+            merkleTree.remove(filename);
+
+        }
+        else{
+            System.out.println("File does not exist and cannot be removed from jit");
+        }
 
     }
 
@@ -56,6 +64,13 @@ public class Jit {
      * If a file exists, add it to the staging area to be included in the next commit.
      */
     public static void add(File filename){
+        if(filename.exists()){
+            System.out.println("File exists and can be added to jit");
+            merkleTree.addChild(filename); //add the file to the merkle tree
+        }
+        else{
+            System.out.println("File does not exist. Please check that the name has been typed correctly");
+        }
 
 
     }
