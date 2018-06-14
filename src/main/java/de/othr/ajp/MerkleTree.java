@@ -1,32 +1,45 @@
 package de.othr.ajp;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MerkleTree<T> implements Serializable{
 
 
 
-    protected ArrayList<String> stagingArea;
+    protected ArrayList<File> stagingArea; //files that will be hashed
 
     private String hashOfNode;
 
     private ArrayList<String> children = new ArrayList<>();
-    private String childDirectory;
     private String rootFilename = ".";
+
     private FileNode rootNode; //to keep track of the node at the top of the tree
 
-    private HashUtil hashUtil;
+    private Map<FileNode, String> hashes = new HashMap<>();
+    private transient HashUtil hashUtil;
+
+    private transient Serializer serializer;
+    private static final long serialVersionUID = 1L;
 
     public MerkleTree(HashUtil hashUtil){
+        serializer = new Serializer();
 
         this.hashUtil = hashUtil;
     }
 
 
     public void addToStagingArea(String filePath, File toBeAdded){
+
+        //stagingArea.add(toBeAdded);
         int childIndex = 1;
 
         String[] files = filePath.split("/");
@@ -59,62 +72,67 @@ public class MerkleTree<T> implements Serializable{
                 currentNode = newNode;
             }
 
-            FileNode newNode = new FileNode(currentNode.getChildren().get(0).getFilename());
-            System.out.println("Name : " + newNode.getFilename() + " Leaf Node ");
+            //The final file is a lead node
+            FileNode leafNode = new FileNode(currentNode.getChildren().get(0).getFilename());
+            leafNode.setBytesOfFile(toBeAdded);
+            System.out.println("Name : " + leafNode.getFilename() + " Leaf Node ");
+
+            //set the hash of the leaf node
+            leafNode.setHashOfNode(hashUtil.byteArrayToHexString(leafNode.getBytesOfFile()));
+            System.out.println(leafNode.getHashOfNode());
+            hashes.put(leafNode, leafNode.getHashOfNode());
 
 
         }
 
 
-        else{ //if adding a filename to an existing tree: traverse the tree and at each level check if the child node is the same as the next filename in the array
+        else { //if adding a filename to an existing tree: traverse the tree and at each level check if the child node is the same as the next filename in the array
             FileNode currentNode = rootNode;
-            int i=1; //one element ahead of the current file, i.e the child
-            while(currentNode.getChildren().get(0).equals(files[i])){ //while the child of the current node is equal to the equivalent level of the new file, traverse to the next level
+            int i = 1; //one element ahead of the current file, i.e the child
+            while (currentNode.getChildren().get(0).equals(files[i])) { //while the child of the current node is equal to the equivalent level of the new file, traverse to the next level
                 currentNode = rootNode.getChildren().get(0);
                 i++;
             }
             //when the child of the current node is different to the next level in the file path, add the rest of the path to the tree
-            while(i <files.length){
+            while (i < files.length) {
                 FileNode newNode = new FileNode(currentNode.getChildren().get(0).getFilename()); //create a new node using the child of the previous node as the name and the child of the file as the child
                 FileNode child = new FileNode(files[i]);
                 newNode.setChildren(child);
-                i ++;
-                System.out.println("Name : " + newNode.getFilename() + " Child "  + newNode.getChildren().get(0));
+                i++;
+                System.out.println("Name : " + newNode.getFilename() + " Child " + newNode.getChildren().get(0).getFilename());
                 currentNode = newNode;
             }
 
-            FileNode newNode = new FileNode(currentNode.getChildren().get(0).getFilename());
-            System.out.println("Name : " + newNode.getFilename() + " Leaf Node ");
+            FileNode leafNode = new FileNode(currentNode.getChildren().get(0).getFilename()); //create a new leaf node with no children
+            leafNode.setBytesOfFile(toBeAdded); //create the byte stream of the file that will be used to generate the SHA-1 hash
+            System.out.println("Name : " + leafNode.getFilename() + " Leaf Node ");
 
+            //set the hash of the leaf node
+            leafNode.setHashOfNode(hashUtil.byteArrayToHexString(leafNode.getBytesOfFile()));
+            System.out.println(leafNode.getHashOfNode());
+
+            hashes.put(leafNode, leafNode.getHashOfNode());
 
         }
-    }
 
-    /**
-     * If a node is not a leaf node, get its child file
-     * Continue until file at leaf node is reached
-     * @param rootNode
-     */
-    public void buildTree(String rootNode){
+        serializer.treeWriter("../../../.jit/staging/staging.ser", this);
 
     }
 
 
     /**
-     * Get the hash of each file in the staging area ArrayList and create File Node objects
-     * Get the concatenation of every hash, represented in a StringBuffer
+     * Get the combined hash of the node's children
+     * If the children do not have hashes, create them
+     * All leaf nodes have their hash computed when they are added to the tree
+     * @param node
+     * @throws IOException
      */
-    public void buildTree(){
-        StringBuffer hashes = new StringBuffer();
-        for(String plainFile: stagingArea){
-            //FileNode newNode = new FileNode(plainFile, hashUtil);
-            //hashes.append(newNode.getHashOfNode()); //Create a string that is a concatenation of every hash
-        }
+    public void hashTree(FileNode node) throws IOException{
 
-        hashOfNode = hashes.toString();
-        System.out.println(hashOfNode);
     }
-    
+
+
+
 
     public void remove(T node){
 
@@ -125,7 +143,13 @@ public class MerkleTree<T> implements Serializable{
         return this.hashOfNode;
     }
 
-    public ArrayList<String> getStagingArea() {
+    /*public ArrayList<String> getStagingArea() {
         return stagingArea;
+    }*/
+
+
+    public FileNode getRootNode() {
+        return rootNode;
     }
+
 }

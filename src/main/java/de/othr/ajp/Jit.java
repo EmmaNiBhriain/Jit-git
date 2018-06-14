@@ -4,7 +4,6 @@ package de.othr.ajp;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Jit {
@@ -97,6 +96,19 @@ public class Jit {
     public static void main(String[] args){
         HashUtil hashUtil = new HashUtil();
         MerkleTree tree = new MerkleTree(hashUtil);
+        File stagingFile = new File("../../../.jit/staging/staging.ser");
+
+        if(stagingFile.exists()){
+            Serializer serializer = new Serializer();
+            serializer.treeReader("../../../.jit/staging/staging.ser");
+            tree = serializer.getReadTree();
+            System.out.println("Existing file has been read successfully. Root is " + tree.getRootNode().getFilename());
+
+        }
+        else{
+            System.out.println("No previously existing files");
+        }
+
         Jit jit = new Jit(tree);
 
         for(int i=0; i<args.length; i++){
@@ -107,7 +119,7 @@ public class Jit {
             System.out.println(args.length);
             if(args[0].equals("init")){
                 System.out.println("Initialising repository");
-                //init();
+                init();
             }
             else if(args[0].equals("add")){
                 System.out.println(args[1]); //print the name of the file to be added

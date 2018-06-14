@@ -4,13 +4,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class FileNode implements Serializable{
 
+    private static final long serialVersionUID = 2L;
+
     private String filename;
 
+    private byte[] bytesOfFile;
 
     private ArrayList<FileNode> children = new ArrayList<>();
     private static boolean leaf = false;
@@ -33,24 +37,20 @@ public class FileNode implements Serializable{
     }
 
 
-
-    /**
-     * Create a FileNode object. Use the HashUtil parameter to get the SHA-1 hash of the File parameter.
-     * @param fileToAdd
-     * @param hasher
-     */
-    public FileNode(File fileToAdd, HashUtil hasher){
-        this.targetFile = fileToAdd;
-        this.hasher = hasher; //assign a local variable to refer to the HashUtil object that creates a hash of a file
-
+    public void setBytesOfFile(File file){
+        Path path = Paths.get(file.getAbsolutePath());
         try{
-            byte[] data = Files.readAllBytes(Paths.get(targetFile.getAbsolutePath()));
-            hashOfNode = hasher.byteArrayToHexString(data);
+            bytesOfFile = Files.readAllBytes(path);
+
         }
-        catch (IOException e){
-            System.out.println("Error accessing path of file"  + e);
+        catch(IOException e){
+            System.out.println("Error reading bytes from file" + e);
         }
 
+    }
+
+    public byte[] getBytesOfFile(){
+        return bytesOfFile;
     }
 
 
@@ -68,5 +68,9 @@ public class FileNode implements Serializable{
 
     public String getHashOfNode() {
         return hashOfNode;
+    }
+
+    public void setHashOfNode(String hash){
+        this.hashOfNode = hash;
     }
 }
