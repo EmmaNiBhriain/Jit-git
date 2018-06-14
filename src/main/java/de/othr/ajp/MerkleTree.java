@@ -29,13 +29,21 @@ public class MerkleTree<T> implements Serializable{
     public void addToStagingArea(String filePath, File toBeAdded){
         int childIndex = 1;
 
-        if(rootFilename == "."){
-            String[] files = filePath.split("/");
-            for(int i=0; i<files.length; i++) {
-                System.out.println(files[i]);
+        String[] files = filePath.split("/");
+        for(int i=0; i<files.length; i++) {
+            System.out.println(files[i]);
 
-            }
-            rootNode = new FileNode(files[0], files[childIndex]);
+        }
+
+        if(rootFilename == "."){
+
+            rootNode = new FileNode(files[0]); //create the root node
+            FileNode childNode = new FileNode(files[childIndex]); //create the first child of the root node
+            rootNode.setChildren(childNode); //add the child of the root node to the root node object
+
+            System.out.println("Name : " + rootNode.getFilename() + " Child "  + rootNode.getChildren().get(0).getFilename());
+
+
             rootFilename = rootNode.getFilename();
 
             childIndex ++;
@@ -43,13 +51,39 @@ public class MerkleTree<T> implements Serializable{
             FileNode currentNode = rootNode;
 
             while(childIndex < files.length){
-                FileNode newNode = new FileNode(currentNode.getChildren().get(0), files[childIndex] ); //create a new node using the child of the previous node as the name and the child of the file as the child
+                FileNode newNode = new FileNode(currentNode.getChildren().get(0).getFilename()); //create a new node using the child of the previous node as the name and the child of the file as the child
+                FileNode child = new FileNode(files[childIndex]);
+                newNode.setChildren(child);
                 childIndex ++;
+                System.out.println("Name : " + newNode.getFilename() + " Child "  + newNode.getChildren().get(0).getFilename());
+                currentNode = newNode;
+            }
+
+            FileNode newNode = new FileNode(currentNode.getChildren().get(0).getFilename());
+            System.out.println("Name : " + newNode.getFilename() + " Leaf Node ");
+
+
+        }
+
+
+        else{ //if adding a filename to an existing tree: traverse the tree and at each level check if the child node is the same as the next filename in the array
+            FileNode currentNode = rootNode;
+            int i=1; //one element ahead of the current file, i.e the child
+            while(currentNode.getChildren().get(0).equals(files[i])){ //while the child of the current node is equal to the equivalent level of the new file, traverse to the next level
+                currentNode = rootNode.getChildren().get(0);
+                i++;
+            }
+            //when the child of the current node is different to the next level in the file path, add the rest of the path to the tree
+            while(i <files.length){
+                FileNode newNode = new FileNode(currentNode.getChildren().get(0).getFilename()); //create a new node using the child of the previous node as the name and the child of the file as the child
+                FileNode child = new FileNode(files[i]);
+                newNode.setChildren(child);
+                i ++;
                 System.out.println("Name : " + newNode.getFilename() + " Child "  + newNode.getChildren().get(0));
                 currentNode = newNode;
             }
 
-            FileNode newNode = new FileNode(currentNode.getChildren().get(0), "");
+            FileNode newNode = new FileNode(currentNode.getChildren().get(0).getFilename());
             System.out.println("Name : " + newNode.getFilename() + " Leaf Node ");
 
 
@@ -80,49 +114,7 @@ public class MerkleTree<T> implements Serializable{
         hashOfNode = hashes.toString();
         System.out.println(hashOfNode);
     }
-
-
-
-
-
-
-
-    /**
-     * Add either a left and a right child node or a left and a right subtree to the Merkle tree object
-     * Get the hash of the two children, concatenate them and use this to get the hash of the tree root
-     * @param leftChild
-     * @param rightChild
-     */
-   /* public void addChildren(T leftChild, T rightChild){
-        String combinedHashOfChildren = " ";
-
-        if((leftChild.getClass().equals(MerkleTree.class))&&(rightChild.getClass().equals(MerkleTree.class))){
-            this.leftChildTree = (MerkleTree) leftChild;
-            this.rightChildTree = (MerkleTree) rightChild;
-            combinedHashOfChildren = leftChildTree.getHashOfNode().concat(rightChildTree.getHashOfNode());
-        }
-        else if((leftChild.getClass().equals(FileNode.class))&&(rightChild.getClass().equals(FileNode.class))){
-            this.leftChildNode = (FileNode) leftChild;
-            this.rightChildNode = (FileNode) rightChild;
-            combinedHashOfChildren = leftChildNode.getHashOfNode().concat(rightChildNode.getHashOfNode());
-        }
-
-        if(!combinedHashOfChildren.equals(" "))
-            hashOfNode = hashUtil.byteArrayToHexString(combinedHashOfChildren.getBytes()); //get the hash of the combined hash of the child tree nodes
-        else
-            System.out.println("combinedHashOfChildren has not been calculated");
-    }*/
-
-    /**
-     * TODO check if this is needed
-     * Method for adding a single node to the tree
-     * @param
-     */
-    /*public void addChild(T singleChild){
-        if((this.leftChildNode.equals(null) && this.rightChildNode.equals(null)) && (this.leftChildTree.equals(null)  && this.rightChildTree.equals(null))){
-            //
-        }
-    }*/
+    
 
     public void remove(T node){
 

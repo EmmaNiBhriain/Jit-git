@@ -12,21 +12,15 @@ public class FileNode implements Serializable{
     private String filename;
 
 
-    private ArrayList<String> children = new ArrayList<>();
-    private static boolean leaf;
+    private ArrayList<FileNode> children = new ArrayList<>();
+    private static boolean leaf = false;
 
     private File targetFile;
     private HashUtil hasher;
     private String hashOfNode; //the SHA-1 hash of the file that will be added to the 'staging area'
 
-    public FileNode(String filename, String childname){
+    public FileNode(String filename){
         this.filename = filename;
-        this.children.add(childname);
-
-        if(children.size()!=0)
-            leaf = false;
-        else
-            leaf = true;
     }
 
     public static boolean isLeaf(){
@@ -60,8 +54,11 @@ public class FileNode implements Serializable{
     }
 
 
+    public void setChildren(FileNode child){
+        children.add(child);
+    }
 
-    public ArrayList<String> getChildren() {
+    public ArrayList<FileNode> getChildren() {
         return children;
     }
 
