@@ -1,6 +1,14 @@
 package de.othr.ajp;
 
-public class MerkleTree<T> {
+import java.io.File;
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class MerkleTree<T> implements Serializable{
+
+
+
+    protected ArrayList<File> stagingArea;
 
     private String hashOfNode;
 
@@ -13,8 +21,36 @@ public class MerkleTree<T> {
     private HashUtil hashUtil;
 
     public MerkleTree(HashUtil hashUtil){
+
         this.hashUtil = hashUtil;
     }
+
+
+    public void addToStagingArea(File toBeAdded){
+        stagingArea.add(toBeAdded);
+       // return stagingArea;
+    }
+
+
+    /**
+     * Get the hash of each file in the staging area ArrayList and create File Node objects
+     * Get the concatenation of every hash, represented in a StringBuffer
+     */
+    public void buildTree(){
+        StringBuffer hashes = new StringBuffer();
+        for(File plainFile: stagingArea){
+            FileNode newNode = new FileNode(plainFile, hashUtil);
+            hashes.append(newNode.getHashOfNode()); //Create a string that is a concatenation of every hash
+        }
+
+        hashOfNode = hashes.toString();
+        System.out.println(hashOfNode);
+    }
+
+
+
+
+
 
 
     /**
@@ -23,7 +59,7 @@ public class MerkleTree<T> {
      * @param leftChild
      * @param rightChild
      */
-    public void addChildren(T leftChild, T rightChild){
+   /* public void addChildren(T leftChild, T rightChild){
         String combinedHashOfChildren = " ";
 
         if((leftChild.getClass().equals(MerkleTree.class))&&(rightChild.getClass().equals(MerkleTree.class))){
@@ -41,18 +77,18 @@ public class MerkleTree<T> {
             hashOfNode = hashUtil.byteArrayToHexString(combinedHashOfChildren.getBytes()); //get the hash of the combined hash of the child tree nodes
         else
             System.out.println("combinedHashOfChildren has not been calculated");
-    }
+    }*/
 
     /**
      * TODO check if this is needed
      * Method for adding a single node to the tree
-     * @param singleChild
+     * @param
      */
-    public void addChild(T singleChild){
+    /*public void addChild(T singleChild){
         if((this.leftChildNode.equals(null) && this.rightChildNode.equals(null)) && (this.leftChildTree.equals(null)  && this.rightChildTree.equals(null))){
             //
         }
-    }
+    }*/
 
     public void remove(T node){
 
@@ -61,5 +97,9 @@ public class MerkleTree<T> {
 
     public String getHashOfNode(){
         return this.hashOfNode;
+    }
+
+    public ArrayList<File> getStagingArea() {
+        return stagingArea;
     }
 }

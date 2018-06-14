@@ -23,13 +23,31 @@ public class TreeTest {
 
         MerkleTree tree = new MerkleTree(hashUtil);
 
-        tree.addChildren(node1, node2);
+       // tree.addChildren(node1, node2);
         String hashOfTree = tree.getHashOfNode();
 
         String expectedCombinationHash = node1.getHashOfNode().concat(node2.getHashOfNode());
         String expectedHashOfTree = hashUtil.byteArrayToHexString(expectedCombinationHash.getBytes());
 
         assertEquals(expectedHashOfTree, hashOfTree);
+
+    }
+
+    @Test
+    public void addToStagingAreaTest(){
+        HashUtil hashUtil = new HashUtil();
+        File testFile1 = new File("new.txt"); //create two files to be hashed
+        File testFile2 = new File("newer.txt");
+
+        MerkleTree tree = new MerkleTree(hashUtil);
+
+        tree.addToStagingArea(testFile1);
+        tree.addToStagingArea(testFile2);
+        assertEquals(2, tree.getStagingArea().size());
+    }
+
+    @Test
+    public void removeTest(){
 
     }
 }

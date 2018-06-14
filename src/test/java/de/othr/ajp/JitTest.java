@@ -44,7 +44,7 @@ public class JitTest {
 
     }
 
-    @After
+    //@After
     public void cleanUp(){
         try{
             Files.delete(Paths.get(".jit/objects"));
