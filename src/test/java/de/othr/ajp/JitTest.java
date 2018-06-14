@@ -66,8 +66,8 @@ public class JitTest {
 
             File newFile = mock(File.class);
             File childFile = mock(File.class);
-            add(newFile);
-            add(childFile);
+            //add(newFile);
+            //add(childFile);
 
             //verify(stagingMock, times(1)).setChild();
         }

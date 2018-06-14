@@ -64,10 +64,14 @@ public class Jit {
     /**
      * If a file exists, add it to the staging area to be included in the next commit.
      */
-    public static void add(File filename){
-        if(filename.exists()){
+    public static void add(String filePath){
+        String relativeFilePath = "../../../" + filePath;
+        System.out.println(relativeFilePath);
+        File toBeAdded = new File(relativeFilePath);
+        System.out.println(toBeAdded.getName());
+        if(toBeAdded.exists()){
             System.out.println("File exists and can be added to jit");
-            //merkleTree.addChild(filename); //add the file to the merkle tree
+            merkleTree.addToStagingArea(filePath, toBeAdded); //add the file to the Merkle tree
         }
         else{
             System.out.println("File does not exist. Please check that the name has been typed correctly");
@@ -91,48 +95,9 @@ public class Jit {
      * @param args
      */
     public static void main(String[] args){
-
-        /*CommandLineParser parser = new DefaultParser();
-        HelpFormatter formatter = new HelpFormatter();
-        CommandLine cmd;
-
-        Options options = new Options(); // commons cli object to declare possibly command line inputs
-
-        options.addOption("init", false, "Initialise a repository by creating a .jit directory");
-        options.addOption("add", true, "Add the file to the repository");
-        options.addOption("remove", true, "Remove a file from the repository");
-        options.addOption("commit", true, "Commit the changes to the repository");
-        options.addOption("checkout", true, "Revert to an earlier commit");
-
-
-        try {
-            cmd = parser.parse(options, args);
-
-            if(cmd.hasOption("init")){
-                System.out.println("Initialising Repository");
-                init();
-            }
-            else if(cmd.hasOption("add")){
-                System.out.println("Adding file to repository");
-
-                String fileToAdd = cmd.getOptionValue("add"); //get the name of the file
-
-                if(fileToAdd == null) {
-                    // print default date
-                }
-                else {
-                    System.out.println(fileToAdd);
-                }
-            }
-        } catch (ParseException e) {
-            System.out.println(e.getMessage());
-            formatter.printHelp("utility-name", options);
-
-            System.exit(1);
-        }*/
-
-
-
+        HashUtil hashUtil = new HashUtil();
+        MerkleTree tree = new MerkleTree(hashUtil);
+        Jit jit = new Jit(tree);
 
         for(int i=0; i<args.length; i++){
             System.out.println(args[i]);
@@ -146,7 +111,7 @@ public class Jit {
             }
             else if(args[0].equals("add")){
                 System.out.println(args[1]); //print the name of the file to be added
-                //add(args[1])
+                jit.add(args[1]);
 
             }
             else if(args[0].equals("remove")){

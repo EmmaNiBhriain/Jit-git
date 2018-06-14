@@ -41,8 +41,8 @@ public class TreeTest {
 
         MerkleTree tree = new MerkleTree(hashUtil);
 
-        tree.addToStagingArea(testFile1);
-        tree.addToStagingArea(testFile2);
+        //tree.addToStagingArea(testFile1);
+        //tree.addToStagingArea(testFile2);
         assertEquals(2, tree.getStagingArea().size());
     }
 

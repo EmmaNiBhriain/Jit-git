@@ -3,20 +3,20 @@ package de.othr.ajp;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MerkleTree<T> implements Serializable{
 
 
 
-    protected ArrayList<File> stagingArea;
+    protected ArrayList<String> stagingArea;
 
     private String hashOfNode;
 
-    private MerkleTree leftChildTree; //left child subtree
-    private MerkleTree rightChildTree; // right child subtree
-
-    private FileNode leftChildNode; //left child node
-    private FileNode rightChildNode; //right child node
+    private ArrayList<String> children = new ArrayList<>();
+    private String childDirectory;
+    private String rootFilename = ".";
+    private FileNode rootNode; //to keep track of the node at the top of the tree
 
     private HashUtil hashUtil;
 
@@ -26,9 +26,43 @@ public class MerkleTree<T> implements Serializable{
     }
 
 
-    public void addToStagingArea(File toBeAdded){
-        stagingArea.add(toBeAdded);
-       // return stagingArea;
+    public void addToStagingArea(String filePath, File toBeAdded){
+        int childIndex = 1;
+
+        if(rootFilename == "."){
+            String[] files = filePath.split("/");
+            for(int i=0; i<files.length; i++) {
+                System.out.println(files[i]);
+
+            }
+            rootNode = new FileNode(files[0], files[childIndex]);
+            rootFilename = rootNode.getFilename();
+
+            childIndex ++;
+
+            FileNode currentNode = rootNode;
+
+            while(childIndex < files.length){
+                FileNode newNode = new FileNode(currentNode.getChildren().get(0), files[childIndex] ); //create a new node using the child of the previous node as the name and the child of the file as the child
+                childIndex ++;
+                System.out.println("Name : " + newNode.getFilename() + " Child "  + newNode.getChildren().get(0));
+                currentNode = newNode;
+            }
+
+            FileNode newNode = new FileNode(currentNode.getChildren().get(0), "");
+            System.out.println("Name : " + newNode.getFilename() + " Leaf Node ");
+
+
+        }
+    }
+
+    /**
+     * If a node is not a leaf node, get its child file
+     * Continue until file at leaf node is reached
+     * @param rootNode
+     */
+    public void buildTree(String rootNode){
+
     }
 
 
@@ -38,9 +72,9 @@ public class MerkleTree<T> implements Serializable{
      */
     public void buildTree(){
         StringBuffer hashes = new StringBuffer();
-        for(File plainFile: stagingArea){
-            FileNode newNode = new FileNode(plainFile, hashUtil);
-            hashes.append(newNode.getHashOfNode()); //Create a string that is a concatenation of every hash
+        for(String plainFile: stagingArea){
+            //FileNode newNode = new FileNode(plainFile, hashUtil);
+            //hashes.append(newNode.getHashOfNode()); //Create a string that is a concatenation of every hash
         }
 
         hashOfNode = hashes.toString();
@@ -99,7 +133,7 @@ public class MerkleTree<T> implements Serializable{
         return this.hashOfNode;
     }
 
-    public ArrayList<File> getStagingArea() {
+    public ArrayList<String> getStagingArea() {
         return stagingArea;
     }
 }

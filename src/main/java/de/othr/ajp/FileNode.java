@@ -5,12 +5,38 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 public class FileNode implements Serializable{
+
+    private String filename;
+
+
+    private ArrayList<String> children = new ArrayList<>();
+    private static boolean leaf;
 
     private File targetFile;
     private HashUtil hasher;
     private String hashOfNode; //the SHA-1 hash of the file that will be added to the 'staging area'
+
+    public FileNode(String filename, String childname){
+        this.filename = filename;
+        this.children.add(childname);
+
+        if(children.size()!=0)
+            leaf = false;
+        else
+            leaf = true;
+    }
+
+    public static boolean isLeaf(){
+        if(leaf){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 
 
 
@@ -31,6 +57,16 @@ public class FileNode implements Serializable{
             System.out.println("Error accessing path of file"  + e);
         }
 
+    }
+
+
+
+    public ArrayList<String> getChildren() {
+        return children;
+    }
+
+    public String getFilename() {
+        return filename;
     }
 
     public String getHashOfNode() {
