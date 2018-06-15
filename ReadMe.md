@@ -11,6 +11,17 @@ Navigate to the project folder using a command prompt window and locate the src/
 C:\filepath\othajpjit\src\main\java
 ```
 
+On Windows machine it may be necessary to add the java bin path. Replace path below with relevant path for your own machine.
+
+```
+set path="C:\Program Files\Java\jdk-9.0.4\bin"
+```
+To compile the program: 
+
+```
+javac de/othr/ajp/*.java
+```
+
 To run the program:
 
 ```
