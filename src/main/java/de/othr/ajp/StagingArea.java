@@ -10,10 +10,14 @@ public class StagingArea implements Serializable{
     private Map<String, ArrayList<FileNode>> childMap;
     private Map<String, FileNode> fileNodes;
     private static final long serialVersionUID = 4L;
+    private FileNode root;
 
-    public StagingArea(Map<String, ArrayList<FileNode>> mapOfChildren, Map<String, FileNode> mapOfNodes){
+
+    public StagingArea(Map<String, ArrayList<FileNode>> mapOfChildren, Map<String, FileNode> mapOfNodes, FileNode rootNode){
         this.childMap = mapOfChildren;
         this.fileNodes = mapOfNodes;
+        this.root = rootNode;
+
     }
 
     public Map<String, ArrayList<FileNode>> getChildMap() {
@@ -22,6 +26,11 @@ public class StagingArea implements Serializable{
 
     public Map<String, FileNode> getFileNodes() {
         return fileNodes;
+    }
+
+
+    public FileNode getRoot() {
+        return root;
     }
 
 }

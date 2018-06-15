@@ -233,4 +233,19 @@ public class TreeBuilder<T> implements Serializable{
         return rootNode;
     }
 
+    public void setChildMap(Map<String, ArrayList<FileNode>> childMap) {
+        this.childMap = childMap;
+    }
+
+    public void setFileNodeMap(Map<String, FileNode> fileNodeMap) {
+        this.fileNodeMap = fileNodeMap;
+    }
+
+    public void setRootFilename(String rootFilename) {
+        this.rootFilename = rootFilename;
+    }
+
+    public void setRootNode(FileNode rootNode) {
+        this.rootNode = rootNode;
+    }
 }

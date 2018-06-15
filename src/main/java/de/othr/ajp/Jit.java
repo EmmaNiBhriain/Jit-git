@@ -73,12 +73,12 @@ public class Jit {
         System.out.println(toBeAdded.getName());
         if(toBeAdded.exists()){
             System.out.println("File exists and can be added to jit");
-            treeBuilder = treeBuilder.addToStagingArea(relativeFilePath,toBeAdded); //Build a tree using the given filepath
+            treeBuilder = treeBuilder.addToStagingArea(filePath,toBeAdded); //Build a tree using the given filepath
 
             Map<String, ArrayList<FileNode>> children = treeBuilder.getChildMap();
             Map<String, FileNode> nodes = treeBuilder.getFileNodeMap();
 
-            StagingArea stagingArea = new StagingArea(children, nodes); //store both of these files in the staging area
+            StagingArea stagingArea = new StagingArea(children, nodes, treeBuilder.getRootNode()); //store both of these files in the staging area
 
             Serializer serializer = new Serializer();
             serializer.treeWriter("../../../.jit/staging/staging.ser", stagingArea);//write the stagingArea object to a file
@@ -115,7 +115,10 @@ public class Jit {
             serializer.treeReader("../../../.jit/staging/staging.ser");
             //treeBuilder = serializer.getReadTree();
             StagingArea stagingArea = serializer.getReadStagingArea();
-            System.out.println("Existing file has been read successfully. Root is " + stagingArea.getFileNodes().get(0).getFilename());
+            treeBuilder.setChildMap(stagingArea.getChildMap());
+            treeBuilder.setFileNodeMap(stagingArea.getFileNodes());
+            treeBuilder.setRootNode(stagingArea.getRoot());
+            System.out.println("Existing file has been read successfully. Root is " + stagingArea.getRoot().getFilename());
 
             //treeBuilder.printTree(treeBuilder.getRootNode());
 

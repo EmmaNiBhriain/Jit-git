@@ -17,6 +17,7 @@ public class Serializer<T> {
 
 
 
+
     private StagingArea readStagingArea;
 
     public void treeWriter(String filename, T object){
