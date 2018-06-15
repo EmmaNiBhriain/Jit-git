@@ -1,20 +1,22 @@
 package de.othr.ajp;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Jit {
-    private static MerkleTree merkleTree;
+    private static TreeBuilder treeBuilder;
 
     /**
-     * Constructor that takes an instance of merkleTree object as a constructor and assigns the value to a merkleTree variable
-     * @param merkleTree
+     * Constructor that takes an instance of treeBuilder object as a constructor and assigns the value to a treeBuilder variable
+     * @param treeBuilder
      */
-    public Jit(MerkleTree merkleTree){
-        this.merkleTree = merkleTree;
+    public Jit(TreeBuilder treeBuilder){
+        this.treeBuilder = treeBuilder;
     }
 
     /**
@@ -51,7 +53,7 @@ public class Jit {
     public void remove(File filename){
         if(filename.exists()){
             System.out.println("File exists and will be removed from jit");
-            merkleTree.remove(filename);
+            treeBuilder.remove(filename);
 
         }
         else{
@@ -64,17 +66,27 @@ public class Jit {
      * If a file exists, add it to the staging area to be included in the next commit.
      */
     public static void add(String filePath){
+
         String relativeFilePath = "../../../" + filePath;
         System.out.println(relativeFilePath);
         File toBeAdded = new File(relativeFilePath);
         System.out.println(toBeAdded.getName());
         if(toBeAdded.exists()){
             System.out.println("File exists and can be added to jit");
-            merkleTree.addToStagingArea(filePath, toBeAdded); //add the file to the Merkle tree
+            treeBuilder = treeBuilder.addToStagingArea(relativeFilePath,toBeAdded); //Build a tree using the given filepath
+
+            Map<String, ArrayList<FileNode>> children = treeBuilder.getChildMap();
+            Map<String, FileNode> nodes = treeBuilder.getFileNodeMap();
+
+            StagingArea stagingArea = new StagingArea(children, nodes); //store both of these files in the staging area
+
+            Serializer serializer = new Serializer();
+            serializer.treeWriter("../../../.jit/staging/staging.ser", stagingArea);//write the stagingArea object to a file
         }
         else{
             System.out.println("File does not exist. Please check that the name has been typed correctly");
         }
+
 
 
     }
@@ -95,21 +107,24 @@ public class Jit {
      */
     public static void main(String[] args){
         HashUtil hashUtil = new HashUtil();
-        MerkleTree tree = new MerkleTree(hashUtil);
+        treeBuilder = new TreeBuilder(hashUtil);
         File stagingFile = new File("../../../.jit/staging/staging.ser");
 
         if(stagingFile.exists()){
             Serializer serializer = new Serializer();
             serializer.treeReader("../../../.jit/staging/staging.ser");
-            tree = serializer.getReadTree();
-            System.out.println("Existing file has been read successfully. Root is " + tree.getRootNode().getFilename());
+            //treeBuilder = serializer.getReadTree();
+            StagingArea stagingArea = serializer.getReadStagingArea();
+            System.out.println("Existing file has been read successfully. Root is " + stagingArea.getFileNodes().get(0).getFilename());
+
+            //treeBuilder.printTree(treeBuilder.getRootNode());
 
         }
         else{
             System.out.println("No previously existing files");
         }
 
-        Jit jit = new Jit(tree);
+        Jit jit = new Jit(treeBuilder);
 
         for(int i=0; i<args.length; i++){
             System.out.println(args[i]);

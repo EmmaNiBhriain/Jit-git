@@ -1,21 +1,31 @@
 package de.othr.ajp;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class used for writing objects to a file
  */
-public class Serializer {
+public class Serializer<T> {
 
 
-    private MerkleTree readTree;
+    private StagingArea readTree;
+    private Map<String, ArrayList<FileNode>> childMap;
+    private Map<String, FileNode> allNodes;
 
-    public void treeWriter(String filename, MerkleTree tree){
+
+
+    private StagingArea readStagingArea;
+
+    public void treeWriter(String filename, T object){
 
         ObjectOutputStream out;
         try{
             out = new ObjectOutputStream(new FileOutputStream(new File(filename)));
-            out.writeObject(tree);
+            out.writeObject(object);
+            System.out.println("Object written successfully to file");
         }
         catch (IOException e){
             System.out.println("Could not write to file" + e);
@@ -27,8 +37,12 @@ public class Serializer {
         try{
             ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(
                     new FileInputStream(fileToRead)));
-            final MerkleTree tree = (MerkleTree) in.readObject();
-            readTree = tree;
+            readStagingArea = (StagingArea) in.readObject();
+
+            //childMap = tree.getChildMap();
+            //allNodes = tree.getFileNodes();
+            //readTree.rebuild();
+
         }
         catch(IOException e){
             System.out.println("Could not read from file " + e);
@@ -39,9 +53,10 @@ public class Serializer {
 
     }
 
-
-    public MerkleTree getReadTree() {
-        return readTree;
+    public StagingArea getReadStagingArea() {
+        return readStagingArea;
     }
+
+
 
 }

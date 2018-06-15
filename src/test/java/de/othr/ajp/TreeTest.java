@@ -10,7 +10,7 @@ import static org.mockito.Mockito.mock;
 public class TreeTest {
 
     /**
-     * Add two files to a MerkleTree and check that the hash of the root is a hash of a concatenation of the two hashed children nodes
+     * Add two files to a TreeBuilder and check that the hash of the root is a hash of a concatenation of the two hashed children nodes
      */
     @Test
     public void addTest(){
@@ -21,7 +21,7 @@ public class TreeTest {
         FileNode node1 = new FileNode(testFile1, hashUtil); //create two file nodes with the hash of the created files
         FileNode node2 = new FileNode(testFile2, hashUtil);
 
-        MerkleTree tree = new MerkleTree(hashUtil);
+        TreeBuilder tree = new TreeBuilder(hashUtil);
 
        // tree.addChildren(node1, node2);
         String hashOfTree = tree.getHashOfNode();
@@ -39,7 +39,7 @@ public class TreeTest {
         File testFile1 = new File("new.txt"); //create two files to be hashed
         File testFile2 = new File("newer.txt");
 
-        MerkleTree tree = new MerkleTree(hashUtil);
+        TreeBuilder tree = new TreeBuilder(hashUtil);
 
         //tree.addToStagingArea(testFile1);
         //tree.addToStagingArea(testFile2);
