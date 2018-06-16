@@ -75,13 +75,16 @@ public class Jit {
             System.out.println("File exists and can be added to jit");
             treeBuilder = treeBuilder.addToStagingArea(filePath,toBeAdded); //Build a tree using the given filepath
 
-            Map<String, ArrayList<FileNode>> children = treeBuilder.getChildMap();
-            Map<String, FileNode> nodes = treeBuilder.getFileNodeMap();
+            if(treeBuilder.writeFlag()){ //update staging area if the file being added is a new file
 
-            StagingArea stagingArea = new StagingArea(children, nodes, treeBuilder.getRootNode()); //store both of these files in the staging area
+                Map<String, ArrayList<FileNode>> children = treeBuilder.getChildMap();
+                Map<String, FileNode> nodes = treeBuilder.getFileNodeMap();
 
-            Serializer serializer = new Serializer();
-            serializer.treeWriter("../../../.jit/staging/staging.ser", stagingArea);//write the stagingArea object to a file
+                StagingArea stagingArea = new StagingArea(children, nodes, treeBuilder.getRootNode()); //store both of these files in the staging area
+
+                Serializer serializer = new Serializer();
+                serializer.treeWriter("../../../.jit/staging/staging.ser", stagingArea);//write the stagingArea object to a file
+            }
         }
         else{
             System.out.println("File does not exist. Please check that the name has been typed correctly");
@@ -120,6 +123,8 @@ public class Jit {
             treeBuilder.setRootNode(stagingArea.getRoot());
             System.out.println("Existing file has been read successfully. Root is " + stagingArea.getRoot().getFilename());
 
+            System.out.println("Printing tree");
+            PrintTree printer = new PrintTree(treeBuilder);
             //treeBuilder.printTree(treeBuilder.getRootNode());
 
         }
@@ -141,6 +146,7 @@ public class Jit {
             }
             else if(args[0].equals("add")){
                 System.out.println(args[1]); //print the name of the file to be added
+
                 jit.add(args[1]);
 
             }

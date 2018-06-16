@@ -41,9 +41,9 @@ Possible commands include
 ```
 C:\filepath\othajpjit\src\main\java> java de.othr.ajp.Jit init
 
-C:\filepath\othajpjit\src\main\java> java de.othr.ajp.Jit add src/main/test1.txt
+C:\filepath\othajpjit\src\main\java> java de.othr.ajp.Jit add src/main/java/test1.txt
 
-C:\filepath\othajpjit\src\main\java> java de.othr.ajp.Jit remove src/main.test1.txt
+C:\filepath\othajpjit\src\main\java> java de.othr.ajp.Jit remove src/main/java/test1.txt
 
 C:\filepath\othajpjit\src\main\java> java de.othr.ajp.Jit commit "New text file created to test adding functionality"
 

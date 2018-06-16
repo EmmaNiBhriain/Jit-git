@@ -24,6 +24,7 @@ public class TreeBuilder<T> implements Serializable{
     private transient Map<FileNode, String> hashes = new HashMap<>();
     private transient HashUtil hashUtil;
     private transient FileNode currentNode;
+    private transient boolean write = false;
 
     private transient Serializer serializer;
     private static final long serialVersionUID = 1L;
@@ -57,36 +58,44 @@ public class TreeBuilder<T> implements Serializable{
             System.out.println(files[i]);
         }
 
-        if(rootFilename == "."){ //if there is no existing tree, build a new one
-            buildNewTree(files, toBeAdded); //build a tree by creating FileNodes to represent each file
+        if(fileNodeMap.containsKey(files[files.length-1])){
+            System.out.println("File already exists in staging area");
         }
+        else{
+            write = true;
+            if(rootFilename == "."){ //if there is no existing tree, build a new one
+                buildNewTree(files, toBeAdded); //build a tree by creating FileNodes to represent each file
+            }
 
 
-        else if(rootFilename.equals(files[0]) ){ //if adding a filename to an existing tree: traverse the tree and at each level check if the child node is the same as the next filename in the array
+            else if(rootFilename.equals(files[0]) ){ //if adding a filename to an existing tree: traverse the tree and at each level check if the child node is the same as the next filename in the array
 
-            addToExistingTree(files, toBeAdded);
+                addToExistingTree(files, toBeAdded);
+
+            }
+
+
+            ArrayList<FileNode> children = currentNode.getChildrenNodes();
+            FileNode leafNode = new FileNode(children.get(children.size()-1).getFilename()); //create a new leaf node with no children
+            leafNode.setBytesOfFile(toBeAdded); //create the byte stream of the file that will be used to generate the SHA-1 hash
+            System.out.println("Name : " + leafNode.getFilename() + " Leaf Node ");
+
+
+            //set the hash of the leaf node
+            leafNode.setHashOfNode(hashUtil.byteArrayToHexString(leafNode.getBytesOfFile()));
+            System.out.println(leafNode.getHashOfNode());
+
+            childMap.put(leafNode.getFilename(), leafNode.getChildrenNodes()); //Add the leaf node
+            fileNodeMap.put(leafNode.getFilename(), leafNode); //add the leaf node to a hashmap for storing all nodes
+
+            //hashes.put(leafNode, leafNode.getHashOfNode());
+
+            //printTree(rootNode);
+
+            //serializer.treeWriter("../../../.jit/staging/staging.ser", this);
+
 
         }
-
-
-        ArrayList<FileNode> children = currentNode.getChildrenNodes();
-        FileNode leafNode = new FileNode(children.get(children.size()-1).getFilename()); //create a new leaf node with no children
-        leafNode.setBytesOfFile(toBeAdded); //create the byte stream of the file that will be used to generate the SHA-1 hash
-        System.out.println("Name : " + leafNode.getFilename() + " Leaf Node ");
-
-
-        //set the hash of the leaf node
-        leafNode.setHashOfNode(hashUtil.byteArrayToHexString(leafNode.getBytesOfFile()));
-        System.out.println(leafNode.getHashOfNode());
-
-        childMap.put(leafNode.getFilename(), leafNode.getChildrenNodes()); //Add the leaf node
-        fileNodeMap.put(leafNode.getFilename(), leafNode); //add the leaf node to a hashmap for storing all nodes
-
-        //hashes.put(leafNode, leafNode.getHashOfNode());
-
-        //printTree(rootNode);
-
-        //serializer.treeWriter("../../../.jit/staging/staging.ser", this);
 
 
         return this;
@@ -248,4 +257,10 @@ public class TreeBuilder<T> implements Serializable{
     public void setRootNode(FileNode rootNode) {
         this.rootNode = rootNode;
     }
+
+
+    public boolean writeFlag() {
+        return write;
+    }
+
 }
