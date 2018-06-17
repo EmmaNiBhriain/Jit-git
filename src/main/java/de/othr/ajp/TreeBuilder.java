@@ -198,12 +198,36 @@ public class TreeBuilder<T> implements Serializable{
             String contents = "Directory \nFile " + fileNode.getChildrenNodes().get(0).getHashOfNode() + " " + fileNode.getChildrenNodes().get(0).getFilename();
             fileNode.setHashOfNode(hashUtil.byteArrayToHexString(contents.getBytes()));
             System.out.println(contents);
+
+            //write contents to file with hash as the name
+            Serializer serializer = new Serializer();
+
+            try{
+                String fileName = ".jit/objects/" + fileNode.getHashOfNode();  //TODO outside of test: add back in ../../../
+                Files.createFile(Paths.get(fileName));
+                serializer.treeWriter(fileName, contents);
+            }
+            catch (IOException e){
+                System.out.println("Could not create file");
+            }
+
         }
         else if((fileNode.getHashOfNode().equals(""))&&(fileNode.getChildrenNodes().size() ==1) &&(!fileNode.getChildrenNodes().get(0).isLeaf())&&(!childMap.get(fileNode.getFilename()).get(0).getHashOfNode().equals(""))){
 
             String contents = "Directory \nDirectory " + fileNode.getChildrenNodes().get(0).getHashOfNode() + " " + fileNode.getChildrenNodes().get(0).getFilename();
             fileNode.setHashOfNode(hashUtil.byteArrayToHexString(contents.getBytes()));
             System.out.println(contents);
+
+            //write contents to file with hash as the name
+            Serializer serializer = new Serializer();
+            try{
+                String fileName = ".jit/objects/" + fileNode.getHashOfNode(); //TODO outside of test: add back in ../../../
+                Files.createFile(Paths.get(fileName));
+                serializer.treeWriter(fileName, contents);
+            }
+            catch (IOException e){
+                System.out.println("Could not create file");
+            }
         }
 
     }
