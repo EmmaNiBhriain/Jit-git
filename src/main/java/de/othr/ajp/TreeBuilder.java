@@ -154,7 +154,8 @@ public class TreeBuilder<T> implements Serializable{
 
             System.out.println("Current node: " + currentNode.getFilename() + "Current file " + files[i] + " Current child " + currentNode.getChildrenNodes().get(0).getFilename() + " files[+1] " + files[i+1]);
 
-            currentNode = currentNode.getChildrenNodes().get(0);
+            FileNode childNode = currentNode.getChildrenNodes().get(0);
+            currentNode = childMap.get(childNode).get(0);
             i++;
         }
         //when the child of the current node is different to the next level in the file path, add the rest of the path to the tree
@@ -172,6 +173,38 @@ public class TreeBuilder<T> implements Serializable{
             currentNode = newNode;
         }
 
+
+    }
+
+    /**
+     * Get the hash of each node in the tree
+     * The nodes of files already had their hashes computed when added to the tree
+     * If a node does not have a hash and hash one child that is not a leaf, call this function of its child
+     * If a node has no hash and has one child that is a leaf, create the hash by adding the word Directory followed by File followed by the name of the child
+     * TODO cater for if a node has multiple children
+     * TODO change Directory + file and directory + directory to directory + type and remove the isLeaf check, just check if the node has a hash
+     *
+     * @param fileNode
+     */
+    public void buildHashes(FileNode fileNode){
+        if((fileNode.getHashOfNode().equals(""))&&(fileNode.getChildrenNodes().size() ==1) &&(!fileNode.getChildrenNodes().get(0).isLeaf())&&(childMap.get(fileNode.getFilename()).get(0).getHashOfNode().equals(""))){
+
+            FileNode childNode =fileNode.getChildrenNodes().get(0);
+            FileNode childObj = childMap.get(fileNode.getFilename()).get(0);
+            buildHashes(childObj);
+            buildHashes(fileNode);
+        }
+        else if((fileNode.getHashOfNode().equals(""))&&(fileNode.getChildrenNodes().size() ==1) &&(fileNode.getChildrenNodes().get(0).isLeaf())){
+            String contents = "Directory \nFile " + fileNode.getChildrenNodes().get(0).getHashOfNode() + " " + fileNode.getChildrenNodes().get(0).getFilename();
+            fileNode.setHashOfNode(hashUtil.byteArrayToHexString(contents.getBytes()));
+            System.out.println(contents);
+        }
+        else if((fileNode.getHashOfNode().equals(""))&&(fileNode.getChildrenNodes().size() ==1) &&(!fileNode.getChildrenNodes().get(0).isLeaf())&&(!childMap.get(fileNode.getFilename()).get(0).getHashOfNode().equals(""))){
+
+            String contents = "Directory \nDirectory " + fileNode.getChildrenNodes().get(0).getHashOfNode() + " " + fileNode.getChildrenNodes().get(0).getFilename();
+            fileNode.setHashOfNode(hashUtil.byteArrayToHexString(contents.getBytes()));
+            System.out.println(contents);
+        }
 
     }
 

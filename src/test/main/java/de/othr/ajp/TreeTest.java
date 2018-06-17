@@ -47,6 +47,33 @@ public class TreeTest {
     }
 
     @Test
+    public void buildHashesTest(){
+        HashUtil hashUtil = new HashUtil();
+
+        TreeBuilder treeBuilder = new TreeBuilder(hashUtil);
+        FileNode root = new FileNode("new1");
+        FileNode child1 = new FileNode("new2");
+        FileNode child2 = new FileNode("new3");
+
+        child2.setHashOfNode("12345");
+        child2.setLeaf(true);
+
+        root.setChildren(child1);
+        child1.setChildren(child2);
+
+
+
+
+        treeBuilder.setRootNode(root);
+        treeBuilder.getChildMap().put(root.getFilename(), root.getChildrenNodes());
+        treeBuilder.getChildMap().put(child1.getFilename(), child1.getChildrenNodes());
+
+        treeBuilder.buildHashes(root);
+
+
+    }
+
+    @Test
     public void removeTest(){
 
     }

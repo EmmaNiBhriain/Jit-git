@@ -9,7 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Jit {
-    private static TreeBuilder treeBuilder;
+    public static TreeBuilder treeBuilder;
+    public static boolean testing = false;
 
     /**
      * Constructor that takes an instance of treeBuilder object as a constructor and assigns the value to a treeBuilder variable
@@ -24,7 +25,8 @@ public class Jit {
      * @param comment
      * @return
      */
-    public void commit(String comment){
+    public void commit(String comment, FileNode rootNode){
+        treeBuilder.buildHashes(rootNode); //assign each node in the tree a hashValue
 
     }
 
@@ -69,10 +71,18 @@ public class Jit {
 
         String relativeFilePath = "../../../" + filePath;
         System.out.println(relativeFilePath);
-        File toBeAdded = new File(relativeFilePath);
+        File toBeAdded;
+        if(testing){
+            toBeAdded = new File(filePath); //ToDO change after test
+        }
+        else{
+            toBeAdded = new File(relativeFilePath); //ToDO change after test
+        }
+
         System.out.println(toBeAdded.getName());
         if(toBeAdded.exists()){
             System.out.println("File exists and can be added to jit");
+
             treeBuilder = treeBuilder.addToStagingArea(filePath,toBeAdded); //Build a tree using the given filepath
 
             if(treeBuilder.writeFlag()){ //update staging area if the file being added is a new file
@@ -83,11 +93,11 @@ public class Jit {
                 StagingArea stagingArea = new StagingArea(children, nodes, treeBuilder.getRootNode()); //store both of these files in the staging area
 
                 Serializer serializer = new Serializer();
-                serializer.treeWriter("../../../.jit/staging/staging.ser", stagingArea);//write the stagingArea object to a file
+                serializer.treeWriter("../../../.jit/staging/staging.ser", stagingArea);//write the stagingArea object to a file //../../../
             }
         }
         else{
-            System.out.println("File does not exist. Please check that the name has been typed correctly");
+            System.out.println("File does not exist. Please check that the name has been typed correctly. Entered name " + toBeAdded.getPath());
         }
 
 
@@ -123,7 +133,7 @@ public class Jit {
             treeBuilder.setRootNode(stagingArea.getRoot());
             System.out.println("Existing file has been read successfully. Root is " + stagingArea.getRoot().getFilename());
 
-            System.out.println("Printing tree");
+            System.out.println("Printing tree size" + treeBuilder.getFileNodeMap().size());
             PrintTree printer = new PrintTree(treeBuilder);
             //treeBuilder.printTree(treeBuilder.getRootNode());
 
@@ -155,6 +165,8 @@ public class Jit {
             }
             else if(args[0].equals("commit")){
                 System.out.println("commit " + args[1]);
+
+                jit.commit(args[1], treeBuilder.getRootNode());
             }
             else if(args[0].equals("checkout")){
                 System.out.println("checkout");

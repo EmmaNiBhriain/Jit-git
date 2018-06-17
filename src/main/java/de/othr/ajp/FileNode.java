@@ -17,8 +17,8 @@ public class FileNode implements Serializable{
     private String filename;
     private byte[] bytesOfFile;
     private Map<String, ArrayList<FileNode>> children = new HashMap<>();
-    private static boolean leaf = false;
-    private String hashOfNode; //the SHA-1 hash of the file that will be added to the 'staging area'
+    private boolean leaf = false;
+    private String hashOfNode = ""; //the SHA-1 hash of the file that will be added to the 'staging area'
 
     public FileNode(String filename){
 
@@ -27,8 +27,8 @@ public class FileNode implements Serializable{
         children.put(filename, childNodes);
     }
 
-    public static boolean isLeaf(){
-        if(leaf){
+    public boolean isLeaf(){
+        if(leaf==true){
             return true;
         }
         else{
@@ -104,5 +104,9 @@ public class FileNode implements Serializable{
     @Override
     public String toString(){
         return "Name of current file: " + this.filename + "\t Number of children: " + this.children.size();
+    }
+
+    public void setLeaf(boolean leaf) {
+        this.leaf = leaf;
     }
 }

@@ -1,6 +1,7 @@
 package de.othr.ajp;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -15,6 +16,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class JitTest {
+
 
 
     @Rule
@@ -37,11 +39,6 @@ public class JitTest {
         assertTrue(Files.exists(Paths.get(".jit/objects"))); //check that the .jit directory contains the directory "objects"
         assertTrue(Files.exists(Paths.get(".jit/staging"))); //check that the .jit directory contains the directory "staging"
 
-
-        //thrownException.expect(IOException.class);
-        //thrownException.expectMessage("Unable to create directory");
-
-
     }
 
     //@After
@@ -55,34 +52,37 @@ public class JitTest {
             System.out.println("Could not delete these directories" + e);
         }
     }
+
     /**
      * Use mockito to create a mock of the staging area as it had not been created yet at the time of writing the test.
+     *
+     * Add a file using the jit command
+     * Test that the addToStagingMethod is called once on the treeBuilder class
+     *
      */
     @Test
-    public void addTest(){
-        if(Files.exists(Paths.get("othajpjit/.jit/staging"))){
-            FileNode stagingMock = mock(FileNode.class);
-            FileNode fileChildMock = mock(FileNode.class);
+    public void addFirstFileTest(){
 
-            File newFile = mock(File.class);
-            File childFile = mock(File.class);
-            //add(newFile);
+        Jit.testing = true;
+        if(Files.exists(Paths.get(".jit/staging"))){
+            TreeBuilder treeBuilderMock = mock(TreeBuilder.class);
+
+            File newFile = new File("new.txt");
+            System.out.println(newFile.getAbsolutePath());
+
+            Jit.treeBuilder = treeBuilderMock;
+            add("new.txt");
             //add(childFile);
 
-            //verify(stagingMock, times(1)).setChild();
+            verify(treeBuilderMock, times(1)).addToStagingArea("new.txt", newFile);
         }
         else{
-            //do something
+            System.out.println("No repository has been initialised");
         }
 
 
     }
 
 
-    @Test
-    public void commitTest(){
-
-
-    }
 
 }
