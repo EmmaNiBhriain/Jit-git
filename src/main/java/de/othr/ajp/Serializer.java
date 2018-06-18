@@ -54,6 +54,23 @@ public class Serializer<T> {
 
     }
 
+    public String readFile(String fileToRead){
+        String fileContents = "";
+        try{
+            ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(
+                    new FileInputStream(fileToRead)));
+             fileContents = in.readObject().toString();
+             System.out.println(fileContents);
+        }
+        catch(IOException e){
+            System.out.println("Could not read from file " + e);
+        }
+        catch (ClassNotFoundException e){
+            System.out.println("class not found" + e);
+        }
+        return fileContents;
+    }
+
     public StagingArea getReadStagingArea() {
         return readStagingArea;
     }

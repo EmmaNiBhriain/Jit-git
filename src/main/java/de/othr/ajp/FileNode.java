@@ -19,6 +19,8 @@ public class FileNode implements Serializable{
     private Map<String, ArrayList<FileNode>> children = new HashMap<>();
     private boolean leaf = false;
     private String hashOfNode = ""; //the SHA-1 hash of the file that will be added to the 'staging area'
+    private FileType fileType;
+    private String contents;
 
     public FileNode(String filename){
 
@@ -108,5 +110,21 @@ public class FileNode implements Serializable{
 
     public void setLeaf(boolean leaf) {
         this.leaf = leaf;
+    }
+
+    public void setFileType(FileType fileType) {
+        this.fileType = fileType;
+    }
+
+    public FileType getFileType() {
+        return fileType;
+    }
+
+    public String getContents() {
+        return contents;
+    }
+
+    public void setContents(String contents) {
+        this.contents = contents;
     }
 }

@@ -4,6 +4,8 @@ import org.junit.*;
 
 import java.io.File;
 
+import static de.othr.ajp.FileType.DIRECTORY;
+import static de.othr.ajp.FileType.FILE;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
@@ -57,6 +59,12 @@ public class TreeTest {
 
         child2.setHashOfNode("12345");
         child2.setLeaf(true);
+        child2.setFileType(FILE);
+        child2.setContents("Contents of a test file");
+
+        child1.setFileType(DIRECTORY);
+
+        root.setFileType(DIRECTORY);
 
         root.setChildren(child1);
         child1.setChildren(child2);
