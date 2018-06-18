@@ -38,6 +38,7 @@ public class TreeBuilder<T> implements Serializable{
     public TreeBuilder(HashUtil hashUtil){
         serializer = new Serializer();
         this.hashUtil = hashUtil;
+        rootNode = new FileNode(".");
     }
 
 
@@ -54,14 +55,49 @@ public class TreeBuilder<T> implements Serializable{
      */
     public TreeBuilder addToStagingArea(String filePath, File toBeAdded){
 
-        String contents = serializer.readFile(filePath);
+        String contents = "";//serializer.readFile(filePath);
 
         String[] files = filePath.split("/");  //split the filepath into Strings so that each file is its own string
         for(int i=0; i<files.length; i++) {
             System.out.println(files[i]);
         }
 
-        if(fileNodeMap.containsKey(files[files.length-1])){
+        FileNode currentNode = rootNode;
+        boolean match = false;
+
+        int i=0;
+        while(i<files.length){
+            match = false;
+            for(FileNode child : currentNode.getChildren()){
+                if(child.getFilename().equals(files[i])){
+                    currentNode = child;
+                    i++;
+                    match = true;
+                    break;
+                }
+
+            }
+            if(match)
+                continue;
+
+
+            FileNode child = new FileNode(files[i]);
+            currentNode.getChildren().add(child);
+            child.setFilepath(filePath);
+            currentNode = child;
+            i++;
+
+
+        }
+
+
+
+
+
+
+
+
+        /*if(fileNodeMap.containsKey(files[files.length-1])){ //TODO go through tree to check if file is already in
             System.out.println("File already exists in staging area");
         }
         else{
@@ -91,7 +127,7 @@ public class TreeBuilder<T> implements Serializable{
             System.out.println(leafNode.getHashOfNode());
 
             childMap.put(leafNode.getFilename(), leafNode.getChildrenNodes()); //Add the leaf node
-            fileNodeMap.put(leafNode.getFilename(), leafNode); //add the leaf node to a hashmap for storing all nodes
+            fileNodeMap.put(leafNode.getFilename(), leafNode); //add the leaf node to a hashmap for storing all nodes*/
 
             //hashes.put(leafNode, leafNode.getHashOfNode());
 
@@ -102,7 +138,7 @@ public class TreeBuilder<T> implements Serializable{
 
 
 
-        }
+        //}
 
 
         return this;
@@ -115,81 +151,81 @@ public class TreeBuilder<T> implements Serializable{
      *
      * @param files
      */
-    public void buildNewTree(String[] files, File toBeAdded){
-
-        int childIndex = 1;
-
-        rootNode = new FileNode(files[0]); //create the root node
-        FileNode childNode = new FileNode(files[childIndex]); //create the first child of the root node
-        rootNode.setChildren(childNode); //add the child of the root node to the root node object
-
-        childMap.put(rootNode.getFilename(), rootNode.getChildrenNodes());//add the filename of the root to a hashmap with a list of its children as a value
-        fileNodeMap.put(rootNode.getFilename(), rootNode); //add the root node to a hashmap for storing all nodes
-
-
-        System.out.println("Name : " + rootNode.getFilename() + " Child "  + rootNode.getChildrenNodes().get(0).getFilename());
-        if(rootNode.getChildrenNodes().size()>0){
-            rootNode.setFileType(DIRECTORY);
-        }
-        else{
-            rootNode.setFileType(FILE);
-        }
-        rootFilename = rootNode.getFilename();
-        childIndex ++;
-
-        currentNode = rootNode;
-
-        while(childIndex < files.length){ //While there is still another file in the path, create a new Node for the current Node and add its child
-            FileNode newNode = new FileNode(currentNode.getChildrenNodes().get(0).getFilename()); //create a new node using the child of the previous node as the name and the child of the file as the child
-            FileNode child = new FileNode(files[childIndex]);
-            newNode.setChildren(child);
-            newNode.setFileType(DIRECTORY);
-            childIndex ++;
-            System.out.println("Name : " + newNode.getFilename() + " Child "  + newNode.getChildrenNodes().get(0).getFilename());
-            currentNode = newNode;
-
-            fileNodeMap.put(currentNode.getFilename(), currentNode); //add the current node to a hashmap for storing all nodes
-            childMap.put(newNode.getFilename(), newNode.getChildrenNodes()); //Add the new node to the hashmap with its children as a value
-        }
-
-
-
-    }
+//    public void buildNewTree(String[] files, File toBeAdded){
+//
+//        int childIndex = 1;
+//
+//        rootNode = new FileNode(files[0]); //create the root node
+//        FileNode childNode = new FileNode(files[childIndex]); //create the first child of the root node
+//        rootNode.setChildren(childNode); //add the child of the root node to the root node object
+//
+//        childMap.put(rootNode.getFilename(), rootNode.getChildrenNodes());//add the filename of the root to a hashmap with a list of its children as a value
+//        fileNodeMap.put(rootNode.getFilename(), rootNode); //add the root node to a hashmap for storing all nodes
+//
+//
+//        System.out.println("Name : " + rootNode.getFilename() + " Child "  + rootNode.getChildrenNodes().get(0).getFilename());
+//        if(rootNode.getChildrenNodes().size()>0){
+//            rootNode.setFileType(DIRECTORY);
+//        }
+//        else{
+//            rootNode.setFileType(FILE);
+//        }
+//        rootFilename = rootNode.getFilename();
+//        childIndex ++;
+//
+//        currentNode = rootNode;
+//
+//        while(childIndex < files.length){ //While there is still another file in the path, create a new Node for the current Node and add its child
+//            FileNode newNode = new FileNode(currentNode.getChildrenNodes().get(0).getFilename()); //create a new node using the child of the previous node as the name and the child of the file as the child
+//            FileNode child = new FileNode(files[childIndex]);
+//            newNode.setChildren(child);
+//            newNode.setFileType(DIRECTORY);
+//            childIndex ++;
+//            System.out.println("Name : " + newNode.getFilename() + " Child "  + newNode.getChildrenNodes().get(0).getFilename());
+//            currentNode = newNode;
+//
+//            fileNodeMap.put(currentNode.getFilename(), currentNode); //add the current node to a hashmap for storing all nodes
+//            childMap.put(newNode.getFilename(), newNode.getChildrenNodes()); //Add the new node to the hashmap with its children as a value
+//        }
+//
+//
+//
+//    }
 
     /**
      * Add a file to an existing Merkle tree
      * @param files
      * @param toBeAdded
      */
-    public void addToExistingTree(String[]files, File toBeAdded){
-        currentNode = rootNode;
-        int i = 1; //one element ahead of the current file, i.e the child
-        while (files[i].equals(currentNode.getChildrenNodes().get(0).getFilename())) { //while the child of the current node is equal to the equivalent level of the new file, traverse to the next level
-
-            System.out.println("Current node: " + currentNode.getFilename() + "Current file " + files[i] + " Current child " + currentNode.getChildrenNodes().get(0).getFilename() + " files[+1] " + files[i+1]);
-
-            FileNode childNode = currentNode.getChildrenNodes().get(0);
-            currentNode = childMap.get(childNode).get(0);
-            i++;
-        }
-        //when the child of the current node is different to the next level in the file path, add the rest of the path to the tree
-        while (i < files.length) {
-            System.out.println("Current node " + currentNode.getFilename() + " Current folder of new file " + files[i]);
-            FileNode newNode = new FileNode(currentNode.getChildrenNodes().get(0).getFilename()); //create a new node using the child of the previous node as the name and the child of the file as the child
-            FileNode child = new FileNode(files[i]);
-            newNode.setChildren(child);
-            newNode.setFileType(DIRECTORY);
-
-            fileNodeMap.put(newNode.getFilename(), newNode); //add the current node to a hashmap for storing all nodes
-
-            childMap.put(newNode.getFilename(), newNode.getChildrenNodes());
-            i++;
-            System.out.println("Name : " + newNode.getFilename() + " Child " + newNode.getChildrenNodes().get(0).getFilename());
-            currentNode = newNode;
-        }
-
-
-    }
+//    public void addToExistingTree(String[]files, File toBeAdded){
+//        currentNode = rootNode;
+//        int i = 1; //one element ahead of the current file, i.e the child
+//        while (files[i].equals(currentNode.getChildrenNodes().get(0).getFilename())) { //while the child of the current node is equal to the equivalent level of the new file, traverse to the next level
+//
+//            System.out.println("Current node: " + currentNode.getFilename() + "Current file " + files[i] + " Current child " + currentNode.getChildrenNodes().get(0).getFilename() + " files[+1] " + files[i+1]);
+//
+//            FileNode childNode = currentNode.getChildrenNodes().get(0);
+//            currentNode = childMap.get(childNode).get(0);
+//            i++;
+//        }
+//        //when the child of the current node is different to the next level in the file path, add the rest of the path to the tree
+//        while (i < files.length) {
+//            System.out.println("Current node " + currentNode.getFilename() + " Current folder of new file " + files[i]);
+//            FileNode newNode = new FileNode(currentNode.getChildrenNodes().get(0).getFilename()); //create a new node using the child of the previous node as the name and the child of the file as the child
+//            FileNode child = new FileNode(files[i]);
+//            newNode.setChildren(child);
+//            newNode.setFileType(DIRECTORY);
+//
+//            fileNodeMap.put(newNode.getFilename(), newNode); //add the current node to a hashmap for storing all nodes
+//
+//            childMap.put(newNode.getFilename(), newNode.getChildrenNodes());
+//            i++;
+//            System.out.println("Name : " + newNode.getFilename() + " Child " + newNode.getChildrenNodes().get(0).getFilename());
+//            currentNode = newNode;
+//        }
+//
+//
+//    }
 
     /**
      * Get the hash of each node in the tree
@@ -203,81 +239,134 @@ public class TreeBuilder<T> implements Serializable{
      */
     public void buildHashes(FileNode fileNode, String message){
 
-        if((fileNode.getHashOfNode().equals(""))&&(fileNode.getChildrenNodes().size() ==1) &&(!fileNode.getChildrenNodes().get(0).isLeaf())&&(childMap.get(fileNode.getFilename()).get(0).getHashOfNode().equals(""))){
+        if(fileNode.isLeaf()) {
+            String contents = serializer.readFile(fileNode.getFilepath());
+            String hash = hashUtil.byteArrayToHexString(contents.getBytes());
+            fileNode.setHashOfNode(hash);
 
-            FileNode childNode =fileNode.getChildrenNodes().get(0);
-            FileNode childObj = childMap.get(fileNode.getFilename()).get(0);
-            buildHashes(childObj, message);
-            buildHashes(fileNode, message);
-        }
-        else if((fileNode.getChildrenNodes().size() < 2)&&(fileNode.getHashOfNode().equals(""))){
-            String contents = "";
-            String type;
-            String childType;
-
-
-            if(fileNode.getFileType().equals(DIRECTORY))
-                type = "Directory";
-            else
-                type = "File";
-
-            if(fileNode.getHashOfNode().equals("")){
-                if(!fileNode.isLeaf()) {
-
-
-                    if (fileNode.getChildrenNodes().get(0).getFileType().equals(FILE))
-                        childType = "File";
-                    else
-                        childType = "Directory";
-
-                    contents = type + "\n" + childType + " " + fileNode.getChildrenNodes().get(0).getHashOfNode() + " " + fileNode.getChildrenNodes().get(0).getFilename();
-
-                    String hash = hashUtil.byteArrayToHexString(contents.getBytes());
-                    fileNode.setHashOfNode(hash);
-
-                    hashedFiles.push(fileNode);
-
-                    if(childMap.get(fileNode.getFilename()).get(0).getHashOfNode().equals("")){
-                        FileNode childObj = childMap.get(fileNode.getFilename()).get(0);
-                        buildHashes(childObj, message);
-                    }
-                    else if(childMap.get(fileNode.getFilename()).get(0).getFileType().equals(FILE)){
-                        Serializer childSerializer = new Serializer();
-
-                        try{
-                            String fileName = ".jit/objects/" + fileNode.getChildrenNodes().get(0).getHashOfNode();  //TODO outside of test: add back in ../../../
-                            Files.createFile(Paths.get(fileName));
-                            childSerializer.treeWriter(fileName, fileNode.getChildrenNodes().get(0).getContents());
-                        }
-                        catch (IOException e){
-                            System.out.println("Could not create file" +e);
-                        }
-                    }
-                }
-            }
-            else{
-                contents = fileNode.getContents();
-            }
-
-
-            System.out.println(contents);
-
-            //write contents to file with hash as the name
-            Serializer serializer = new Serializer();
-
-            try{
-                String fileName = ".jit/objects/" + fileNode.getHashOfNode();  //TODO outside of test: add back in ../../../
+            try {
+                String fileName = ".jit/objects/" + hash;
                 Files.createFile(Paths.get(fileName));
                 serializer.treeWriter(fileName, contents);
-            }
-            catch (IOException e){
-                System.out.println("Could not create file" +e);
+            } catch (IOException e) {
+                System.out.println("Error writing to file " + e);
+
+
             }
 
         }
-        else if((!fileNode.getHashOfNode().equals(""))&&(fileNode.getChildrenNodes().size() ==1)){
 
+        else { //directory
+
+            String contents = "";
+            if(fileNode.equals(rootNode)){
+                contents = "Commit " + message + "\n";
+            }
+            else
+                contents = "Directory \n ";
+            String type = "";
+            for (FileNode child : fileNode.getChildren()) {
+
+                buildHashes(child, message);
+                if (child.isLeaf()) {
+                    type = "File";
+                } else {
+                    type = "Directory";
+                }
+                contents += type + " " + child.getHashOfNode() + " " + child.getFilename() + "\n";
+                //buildHashes(fileNode);
+
+            }
+
+            String hash = hashUtil.byteArrayToHexString(contents.getBytes());
+            fileNode.setHashOfNode(hash);
+
+            try {
+                String fileName = ".jit/objects/" + hash;
+                Files.createFile(Paths.get(fileName));
+                serializer.treeWriter(fileName, contents);
+            } catch (IOException e) {
+                System.out.println("Error writing to file " + e);
+
+
+            }
         }
+
+        //if((fileNode.getHashOfNode().equals(""))&&(fileNode.getChildrenNodes().size() ==1) &&(!fileNode.getChildrenNodes().get(0).isLeaf())&&(childMap.get(fileNode.getFilename()).get(0).getHashOfNode().equals(""))){
+//
+//            FileNode childNode =fileNode.getChildrenNodes().get(0);
+//            FileNode childObj = childMap.get(fileNode.getFilename()).get(0);
+//            buildHashes(childObj, message);
+//            buildHashes(fileNode, message);
+//        }
+//        else if((fileNode.getChildrenNodes().size() < 2)&&(fileNode.getHashOfNode().equals(""))){
+//            String contents = "";
+//            String type;
+//            String childType;
+//
+//
+//            if(fileNode.getFileType().equals(DIRECTORY))
+//                type = "Directory";
+//            else
+//                type = "File";
+//
+//            if(fileNode.getHashOfNode().equals("")){
+//                if(!fileNode.isLeaf()) {
+//
+//
+//                    if (fileNode.getChildrenNodes().get(0).getFileType().equals(FILE))
+//                        childType = "File";
+//                    else
+//                        childType = "Directory";
+//
+//                    contents = type + "\n" + childType + " " + fileNode.getChildrenNodes().get(0).getHashOfNode() + " " + fileNode.getChildrenNodes().get(0).getFilename();
+//
+//                    String hash = hashUtil.byteArrayToHexString(contents.getBytes());
+//                    fileNode.setHashOfNode(hash);
+//
+//                    hashedFiles.push(fileNode);
+//
+//                    if(childMap.get(fileNode.getFilename()).get(0).getHashOfNode().equals("")){
+//                        FileNode childObj = childMap.get(fileNode.getFilename()).get(0);
+//                        buildHashes(childObj, message);
+//                    }
+//                    else if(childMap.get(fileNode.getFilename()).get(0).getFileType().equals(FILE)){
+//                        Serializer childSerializer = new Serializer();
+//
+//                        try{
+//                            String fileName = ".jit/objects/" + fileNode.getChildrenNodes().get(0).getHashOfNode();  //TODO outside of test: add back in ../../../
+//                            Files.createFile(Paths.get(fileName));
+//                            childSerializer.treeWriter(fileName, fileNode.getChildrenNodes().get(0).getContents());
+//                        }
+//                        catch (IOException e){
+//                            System.out.println("Could not create file" +e);
+//                        }
+//                    }
+//                }
+//            }
+//            else{
+//                contents = fileNode.getContents();
+//            }
+//
+//
+//            System.out.println(contents);
+//
+//            //write contents to file with hash as the name
+//            Serializer serializer = new Serializer();
+//
+//            try{
+//                String fileName = ".jit/objects/" + fileNode.getHashOfNode();  //TODO outside of test: add back in ../../../
+//                Files.createFile(Paths.get(fileName));
+//                serializer.treeWriter(fileName, contents);
+//            }
+//            catch (IOException e){
+//                System.out.println("Could not create file" +e);
+//            }
+//
+//        }
+//        else if((!fileNode.getHashOfNode().equals(""))&&(fileNode.getChildrenNodes().size() ==1)){
+//
+//        }
 
 
 
@@ -341,18 +430,18 @@ public class TreeBuilder<T> implements Serializable{
 
     /**
      * To print the entire tree, pass the rootnode as a parameter
-     * @param starterNode
-     */
-    public void printTree(FileNode starterNode){
-        currentNode = starterNode;
-        System.out.println(currentNode.getFilename());
-        if(currentNode.getChildrenNodes().size()!=0){
-            for(FileNode child : currentNode.getChildrenNodes()){
-                printTree(child);
-            }
-
-        }
-    }
+     * //@param starterNode
+//     */
+//    public void printTree(FileNode starterNode){
+//        currentNode = starterNode;
+//        System.out.println(currentNode.getFilename());
+//        if(currentNode.getChildrenNodes().size()!=0){
+//            for(FileNode child : currentNode.getChildrenNodes()){
+//                printTree(child);
+//            }
+//
+//        }
+//    }
 
 
 
@@ -386,8 +475,8 @@ public class TreeBuilder<T> implements Serializable{
     }
 
 
-    public boolean writeFlag() {
-        return write;
-    }
+//    public boolean writeFlag() {
+//        return write;
+//    }
 
 }

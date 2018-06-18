@@ -16,26 +16,28 @@ public class FileNode implements Serializable{
     private static final long serialVersionUID = 2L;
     private String filename;
     private byte[] bytesOfFile;
-    private Map<String, ArrayList<FileNode>> children = new HashMap<>();
+    //private Map<String, ArrayList<FileNode>> children = new HashMap<>();
+    private ArrayList<FileNode> children = new ArrayList<>();
     private boolean leaf = false;
     private String hashOfNode = ""; //the SHA-1 hash of the file that will be added to the 'staging area'
     private FileType fileType;
     private String contents;
 
+    private String filepath;
+
     public FileNode(String filename){
 
         this.filename = filename;
         ArrayList<FileNode> childNodes = new ArrayList<>(); //create a new empty arraylist of children
-        children.put(filename, childNodes);
+        //children.put(filename, childNodes);
     }
 
     public boolean isLeaf(){
-        if(leaf==true){
+        if(children.isEmpty()){
             return true;
         }
-        else{
+        else
             return false;
-        }
     }
 
 
@@ -66,26 +68,26 @@ public class FileNode implements Serializable{
      * Otherwise, add the child to the list of children for this node
      * @param child
      */
-    public void setChildren(FileNode child){
-        if(this.getChildrenNodes().size()!=0){
-            ArrayList<FileNode> childrenList = new ArrayList<>();
-            childrenList.add(child);
-            children.put(this.getFilename(), childrenList); //use the current name of the file and add to hashmap with this child as a key
-        }
-
-        else{
-            this.getChildrenNodes().add(child); //TODO check that this value is update
-        }
-
-    }
+//    public void setChildren(FileNode child){
+//        if(this.getChildrenNodes().size()!=0){
+//            ArrayList<FileNode> childrenList = new ArrayList<>();
+//            childrenList.add(child);
+//            //children.put(this.getFilename(), childrenList); //use the current name of the file and add to hashmap with this child as a key
+//        }
+//
+//        else{
+//            this.getChildrenNodes().add(child); //TODO check that this value is update
+//        }
+//
+//    }
 
     /**
      * Return all the nodes of the children
      * @return
      */
-    public ArrayList<FileNode> getChildrenNodes() {
+   /* public ArrayList<FileNode> getChildrenNodes() {
         return children.get(this.filename); //retrieve the list of children from the hashmap using this object's filename as a key
-    }
+    }*/
 
     public String getFilename() {
         return filename;
@@ -126,5 +128,17 @@ public class FileNode implements Serializable{
 
     public void setContents(String contents) {
         this.contents = contents;
+    }
+
+    public ArrayList<FileNode> getChildren() {
+        return children;
+    }
+    public String getFilepath() {
+        return filepath;
+    }
+
+
+    public void setFilepath(String filepath) {
+        this.filepath = filepath;
     }
 }

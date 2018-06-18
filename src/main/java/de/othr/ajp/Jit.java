@@ -29,26 +29,6 @@ public class Jit {
         treeBuilder.setRootNode(rootNode);
 
         treeBuilder.buildHashes(rootNode, comment); //assign each node in the tree a hashValue
-
-        FileNode topFile = (FileNode) treeBuilder.hashedFiles.pop();
-        String content = "Commit " + comment + "\n" + topFile.getFileType() +  " " + topFile.getHashOfNode() + " " + topFile.getFilename();
-        System.out.println(content);
-        Serializer committer = new Serializer();
-        HashUtil hashUtil = new HashUtil();
-        String hash = hashUtil.byteArrayToHexString(content.getBytes());
-        String fileName = ".jit/objects/" + hash;  //TODO outside of test: add back in ../../../
-        try{
-            Files.createFile(Paths.get(fileName));
-            committer.treeWriter(fileName, content);
-        }
-        catch (IOException e){
-            System.out.println("Error writing commit file");
-        }
-
-
-
-
-
     }
 
     /**
@@ -60,15 +40,16 @@ public class Jit {
     public static void init(){
 
         try{
-            Files.createDirectories(Paths.get( "../../../.jit"));
-            Files.createDirectories(Paths.get("../../../.jit/objects"));
-            Files.createDirectories(Paths.get("../../../.jit/staging"));
+            Files.createDirectories(Paths.get( ".jit"));
+            Files.createDirectories(Paths.get(".jit/objects"));
+            Files.createDirectories(Paths.get(".jit/staging"));
 
         }
         catch (IOException e) {
             System.out.println("Error creating directory");
         }
-            }
+//
+    }
 
     /**
      * Remove a file fromm the staging area
@@ -90,32 +71,30 @@ public class Jit {
      */
     public static void add(String filePath){
 
-        String relativeFilePath = "../../../" + filePath;
+        String relativeFilePath =  filePath;
         System.out.println(relativeFilePath);
-        File toBeAdded;
-        if(testing){
-            toBeAdded = new File(filePath); //ToDO change after test
-        }
-        else{
-            toBeAdded = new File(relativeFilePath); //ToDO change after test
-        }
+        File toBeAdded = new File(filePath);;
+
 
         System.out.println(toBeAdded.getName());
         if(toBeAdded.exists()){
             System.out.println("File exists and can be added to jit");
 
             treeBuilder = treeBuilder.addToStagingArea(filePath,toBeAdded); //Build a tree using the given filepath
+            Serializer serializer = new Serializer();
+            serializer.treeWriter(".jit/staging/staging.ser", treeBuilder.getRootNode());//write the stagingArea object to a file //../../../
 
-            if(treeBuilder.writeFlag()){ //update staging area if the file being added is a new file
 
-                Map<String, ArrayList<FileNode>> children = treeBuilder.getChildMap();
-                Map<String, FileNode> nodes = treeBuilder.getFileNodeMap();
+            //if(treeBuilder.writeFlag()){ //update staging area if the file being added is a new file
 
-                StagingArea stagingArea = new StagingArea(children, nodes, treeBuilder.getRootNode()); //store both of these files in the staging area
+               // Map<String, ArrayList<FileNode>> children = treeBuilder.getChildMap();
+                //Map<String, FileNode> nodes = treeBuilder.getFileNodeMap();
 
-                Serializer serializer = new Serializer();
-                serializer.treeWriter("../../../.jit/staging/staging.ser", stagingArea);//write the stagingArea object to a file //../../../
-            }
+                //StagingArea stagingArea = new StagingArea(children, nodes, treeBuilder.getRootNode()); //store both of these files in the staging area
+
+//                Serializer serializer = new Serializer();
+//                serializer.treeWriter(".jit/staging/staging.ser", treeBuilder.getRootNode());//write the stagingArea object to a file //../../../
+//            }
         }
         else{
             System.out.println("File does not exist. Please check that the name has been typed correctly. Entered name " + toBeAdded.getPath());
@@ -140,22 +119,26 @@ public class Jit {
      * @param args
      */
     public static void main(String[] args){
+
+//        System.out.println(Paths.get("").toAbsolutePath());
+  //      System.exit(1);
+
         HashUtil hashUtil = new HashUtil();
         treeBuilder = new TreeBuilder(hashUtil);
-        File stagingFile = new File("../../../.jit/staging/staging.ser");
+        File stagingFile = new File(".jit/staging/staging.ser");
 
         if(stagingFile.exists()){
             Serializer serializer = new Serializer();
-            serializer.treeReader("../../../.jit/staging/staging.ser");
+            serializer.treeReader(".jit/staging/staging.ser");
             //treeBuilder = serializer.getReadTree();
-            StagingArea stagingArea = serializer.getReadStagingArea();
-            treeBuilder.setChildMap(stagingArea.getChildMap());
-            treeBuilder.setFileNodeMap(stagingArea.getFileNodes());
-            treeBuilder.setRootNode(stagingArea.getRoot());
-            System.out.println("Existing file has been read successfully. Root is " + stagingArea.getRoot().getFilename());
+            FileNode stagingArea = serializer.getReadStagingArea();
+            //treeBuilder.setChildMap(stagingArea.getChildMap());
+            //treeBuilder.setFileNodeMap(stagingArea.getFileNodes());
+            treeBuilder.setRootNode(stagingArea);
+            System.out.println("Existing file has been read successfully. Root is " + stagingArea.getFilename());
 
             System.out.println("Printing tree size" + treeBuilder.getFileNodeMap().size());
-            PrintTree printer = new PrintTree(treeBuilder);
+           // PrintTree printer = new PrintTree(treeBuilder);
             //treeBuilder.printTree(treeBuilder.getRootNode());
 
         }
