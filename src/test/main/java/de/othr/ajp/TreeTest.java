@@ -3,6 +3,9 @@ package de.othr.ajp;
 import org.junit.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static de.othr.ajp.FileType.DIRECTORY;
 import static de.othr.ajp.FileType.FILE;
@@ -76,8 +79,22 @@ public class TreeTest {
         treeBuilder.getChildMap().put(root.getFilename(), root.getChildrenNodes());
         treeBuilder.getChildMap().put(child1.getFilename(), child1.getChildrenNodes());
 
-        treeBuilder.buildHashes(root);
+        treeBuilder.buildHashes(root, "Testing");
 
+        FileNode topFile = (FileNode) treeBuilder.hashedFiles.pop();
+        String content = "Commit " + "testing commit " + "\n" + topFile.getFileType() +  " " + topFile.getHashOfNode() + " " + topFile.getFilename();
+        System.out.println(content);
+        Serializer committer = new Serializer();
+
+        String hash = hashUtil.byteArrayToHexString(content.getBytes());
+        String fileName = ".jit/objects/" + hash;  //TODO outside of test: add back in ../../../
+        try{
+            Files.createFile(Paths.get(fileName));
+            committer.treeWriter(fileName, content);
+        }
+        catch (IOException e){
+            System.out.println("Error writing commit file");
+        }
 
     }
 

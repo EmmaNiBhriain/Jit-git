@@ -6,10 +6,7 @@ import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static de.othr.ajp.FileType.DIRECTORY;
 import static de.othr.ajp.FileType.FILE;
@@ -31,6 +28,7 @@ public class TreeBuilder<T> implements Serializable{
 
     private transient Serializer serializer;
     private static final long serialVersionUID = 1L;
+    public transient Stack<FileNode> hashedFiles = new Stack<>();
 
     /**
      * Called from the Jit.add method
@@ -100,6 +98,8 @@ public class TreeBuilder<T> implements Serializable{
             //printTree(rootNode);
 
             //serializer.treeWriter("../../../.jit/staging/staging.ser", this);
+
+
 
 
         }
@@ -201,13 +201,14 @@ public class TreeBuilder<T> implements Serializable{
      *
      * @param fileNode
      */
-    public void buildHashes(FileNode fileNode){
+    public void buildHashes(FileNode fileNode, String message){
+
         if((fileNode.getHashOfNode().equals(""))&&(fileNode.getChildrenNodes().size() ==1) &&(!fileNode.getChildrenNodes().get(0).isLeaf())&&(childMap.get(fileNode.getFilename()).get(0).getHashOfNode().equals(""))){
 
             FileNode childNode =fileNode.getChildrenNodes().get(0);
             FileNode childObj = childMap.get(fileNode.getFilename()).get(0);
-            buildHashes(childObj);
-            buildHashes(fileNode);
+            buildHashes(childObj, message);
+            buildHashes(fileNode, message);
         }
         else if((fileNode.getChildrenNodes().size() < 2)&&(fileNode.getHashOfNode().equals(""))){
             String contents = "";
@@ -231,11 +232,14 @@ public class TreeBuilder<T> implements Serializable{
 
                     contents = type + "\n" + childType + " " + fileNode.getChildrenNodes().get(0).getHashOfNode() + " " + fileNode.getChildrenNodes().get(0).getFilename();
 
-                    fileNode.setHashOfNode(hashUtil.byteArrayToHexString(contents.getBytes()));
+                    String hash = hashUtil.byteArrayToHexString(contents.getBytes());
+                    fileNode.setHashOfNode(hash);
+
+                    hashedFiles.push(fileNode);
 
                     if(childMap.get(fileNode.getFilename()).get(0).getHashOfNode().equals("")){
                         FileNode childObj = childMap.get(fileNode.getFilename()).get(0);
-                        buildHashes(childObj);
+                        buildHashes(childObj, message);
                     }
                     else if(childMap.get(fileNode.getFilename()).get(0).getFileType().equals(FILE)){
                         Serializer childSerializer = new Serializer();
@@ -249,7 +253,6 @@ public class TreeBuilder<T> implements Serializable{
                             System.out.println("Could not create file" +e);
                         }
                     }
-
                 }
             }
             else{

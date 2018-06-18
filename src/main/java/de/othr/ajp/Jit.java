@@ -26,7 +26,28 @@ public class Jit {
      * @return
      */
     public void commit(String comment, FileNode rootNode){
-        treeBuilder.buildHashes(rootNode); //assign each node in the tree a hashValue
+        treeBuilder.setRootNode(rootNode);
+
+        treeBuilder.buildHashes(rootNode, comment); //assign each node in the tree a hashValue
+
+        FileNode topFile = (FileNode) treeBuilder.hashedFiles.pop();
+        String content = "Commit " + comment + "\n" + topFile.getFileType() +  " " + topFile.getHashOfNode() + " " + topFile.getFilename();
+        System.out.println(content);
+        Serializer committer = new Serializer();
+        HashUtil hashUtil = new HashUtil();
+        String hash = hashUtil.byteArrayToHexString(content.getBytes());
+        String fileName = ".jit/objects/" + hash;  //TODO outside of test: add back in ../../../
+        try{
+            Files.createFile(Paths.get(fileName));
+            committer.treeWriter(fileName, content);
+        }
+        catch (IOException e){
+            System.out.println("Error writing commit file");
+        }
+
+
+
+
 
     }
 
