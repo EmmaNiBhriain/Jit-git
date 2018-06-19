@@ -12,13 +12,6 @@ import java.util.Map;
  */
 public class Serializer<T> {
 
-
-    private Map<String, ArrayList<FileNode>> childMap;
-    private Map<String, FileNode> allNodes;
-
-
-
-
     private FileNode readStagingArea;
 
     public void treeWriter(String filename, T object){
@@ -28,6 +21,22 @@ public class Serializer<T> {
             out = new ObjectOutputStream(new FileOutputStream(new File(filename)));
             out.writeObject(object);
             System.out.println("Object written successfully to file");
+            out.close();
+        }
+        catch (IOException e){
+            System.out.println("Could not write to file" + e);
+        }
+
+    }
+
+    public void fileWriter(String filename, String fileContents){
+
+        ObjectOutputStream out;
+        try{
+            out = new ObjectOutputStream(new FileOutputStream(new File(filename)));
+            out.writeObject(fileContents);
+            System.out.println("Object written successfully to file");
+            out.close();
         }
         catch (IOException e){
             System.out.println("Could not write to file" + e);
@@ -40,10 +49,8 @@ public class Serializer<T> {
             ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(
                     new FileInputStream(fileToRead)));
             readStagingArea = (FileNode) in.readObject();
+            in.close();
 
-            //childMap = tree.getChildMap();
-            //allNodes = tree.getFileNodes();
-            //readTree.rebuild();
 
         }
         catch(IOException e){
@@ -59,17 +66,12 @@ public class Serializer<T> {
         String fileContents = "";
         try{
             return new String(Files.readAllBytes(Paths.get(fileToRead)));
-//            ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(
-//                    new FileInputStream(fileToRead)));
-//             fileContents = in.readObject().toString();
-           //  System.out.println(fileContents);
+
         }
         catch(IOException e){
             System.out.println("Could not read from file " + e);
         }
-//        catch (ClassNotFoundException e){
-//            System.out.println("class not found" + e);
-//        }
+
         return fileContents;
     }
 

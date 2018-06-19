@@ -137,7 +137,6 @@ public class Jit {
             treeBuilder.setRootNode(stagingArea);
             System.out.println("Existing file has been read successfully. Root is " + stagingArea.getFilename());
 
-            System.out.println("Printing tree size" + treeBuilder.getFileNodeMap().size());
            // PrintTree printer = new PrintTree(treeBuilder);
             //treeBuilder.printTree(treeBuilder.getRootNode());
 
