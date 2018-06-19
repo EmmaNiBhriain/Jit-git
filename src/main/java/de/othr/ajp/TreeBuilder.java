@@ -4,31 +4,20 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
 
-import static de.othr.ajp.FileType.DIRECTORY;
-import static de.othr.ajp.FileType.FILE;
 
 public class TreeBuilder<T> implements Serializable{
-    //protected ArrayList<FileNode> stagingArea; //files that will be hashed
-    //private String hashOfNode;
 
-    //private Map<String, ArrayList<FileNode>> childMap = new HashMap<>(); //store the name of the node and an arrayList of all its children
-    //private Map<String, FileNode> fileNodeMap = new HashMap<>(); //store the names of each node with the node object as a value
     private transient String rootFilename = ".";
 
     private transient FileNode rootNode; //to keep track of the node at the top of the tree
 
-    //private transient Map<FileNode, String> hashes = new HashMap<>();
     private transient HashUtil hashUtil;
-    //private transient FileNode currentNode;
-    //private transient boolean write = false;
+
 
     private transient Serializer serializer;
     private static final long serialVersionUID = 1L;
-    //public transient Stack<FileNode> hashedFiles = new Stack<>();
 
     /**
      * Called from the Jit.add method
@@ -141,8 +130,7 @@ public class TreeBuilder<T> implements Serializable{
                     type = "Directory";
                 }
                 contents += type + " " + child.getHashOfNode() + " " + child.getFilename() + "\n";
-                //buildHashes(fileNode);
-
+                
             }
 
             String hash = hashUtil.byteArrayToHexString(contents.getBytes());
@@ -174,10 +162,6 @@ public class TreeBuilder<T> implements Serializable{
         return rootNode;
     }
 
-
-    public void setRootFilename(String rootFilename) {
-        this.rootFilename = rootFilename;
-    }
 
     public void setRootNode(FileNode rootNode) {
         this.rootNode = rootNode;

@@ -84,17 +84,6 @@ public class Jit {
             Serializer serializer = new Serializer();
             serializer.treeWriter(".jit/staging/staging.ser", treeBuilder.getRootNode());//write the stagingArea object to a file //../../../
 
-
-            //if(treeBuilder.writeFlag()){ //update staging area if the file being added is a new file
-
-               // Map<String, ArrayList<FileNode>> children = treeBuilder.getChildMap();
-                //Map<String, FileNode> nodes = treeBuilder.getFileNodeMap();
-
-                //StagingArea stagingArea = new StagingArea(children, nodes, treeBuilder.getRootNode()); //store both of these files in the staging area
-
-//                Serializer serializer = new Serializer();
-//                serializer.treeWriter(".jit/staging/staging.ser", treeBuilder.getRootNode());//write the stagingArea object to a file //../../../
-//            }
         }
         else{
             System.out.println("File does not exist. Please check that the name has been typed correctly. Entered name " + toBeAdded.getPath());
@@ -130,15 +119,12 @@ public class Jit {
         if(stagingFile.exists()){
             Serializer serializer = new Serializer();
             serializer.treeReader(".jit/staging/staging.ser");
-            //treeBuilder = serializer.getReadTree();
+
             FileNode stagingArea = serializer.getReadStagingArea();
-            //treeBuilder.setChildMap(stagingArea.getChildMap());
-            //treeBuilder.setFileNodeMap(stagingArea.getFileNodes());
+
             treeBuilder.setRootNode(stagingArea);
             System.out.println("Existing file has been read successfully. Root is " + stagingArea.getFilename());
 
-           // PrintTree printer = new PrintTree(treeBuilder);
-            //treeBuilder.printTree(treeBuilder.getRootNode());
 
         }
         else{
