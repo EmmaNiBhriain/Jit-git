@@ -49,7 +49,7 @@ C:\filepath\othajpjit>java -jar target/oth-ajp-jit-1.0-jar-with-dependencies.jar
 ```
 
 #### Method 2 : From within the IDE
-Open the project in IntelliJ 
-Edit the Run configurations to have paramters 
-Run from within the IDE
+* Open the project in IntelliJ 
+* Edit the Run configurations to have paramters 
+* Run from within the IDE
 
