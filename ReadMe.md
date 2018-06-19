@@ -5,27 +5,24 @@ This program is a version control program based on git. This Java program is des
 
 ## Instructions
 
-Navigate to the project folder using a command prompt window and locate the src/main/java folder:
+#### Method 1 : With Maven installed 
+
+Navigate to the project folder using a command prompt window: 
 
 ```
-C:\filepath\othajpjit\src\main\java
+C:\filepath\othajpjit>
 ```
 
-On Windows machine it may be necessary to add the java bin path. Replace path below with relevant path for your own machine.
-
-```
-set path="C:\Program Files\Java\jdk-9.0.4\bin"
-```
 To compile the program: 
 
 ```
-javac de/othr/ajp/*.java
+mvn clean compile assembly:single
 ```
 
 To run the program:
 
 ```
-java de.othr.ajp.Jit <command>
+java -jar target/oth-ajp-jit-1.0-jar-with-dependencies.jar <command>
 ```
 
 Possible commands include
@@ -39,15 +36,20 @@ Possible commands include
 
 #### Examples
 ```
-C:\filepath\othajpjit\src\main\java> java de.othr.ajp.Jit init
+C:\filepath\othajpjit> java -jar target/oth-ajp-jit-1.0-jar-with-dependencies.jar init
 
-C:\filepath\othajpjit\src\main\java> java de.othr.ajp.Jit add src/main/java/test1.txt
+C:\filepath\othajpjit> java -jar target/oth-ajp-jit-1.0-jar-with-dependencies.jar add src/main/java/test1.txt
 
-C:\filepath\othajpjit\src\main\java> java de.othr.ajp.Jit remove src/main/java/test1.txt
+C:\filepath\othajpjit> java -jar target/oth-ajp-jit-1.0-jar-with-dependencies.jar src/main/java/test1.txt
 
-C:\filepath\othajpjit\src\main\java> java de.othr.ajp.Jit commit "New text file created to test adding functionality"
+C:\filepath\othajpjit> java -jar target/oth-ajp-jit-1.0-jar-with-dependencies.jar commit "New text file created to test adding functionality"
 
-C:\filepath\othajpjit\src\main\java> java de.othr.ajp.Jit checkout 56b9946f580e5946ae654c0741cf21363521292c
+C:\filepath\othajpjit>java -jar target/oth-ajp-jit-1.0-jar-with-dependencies.jar checkout 56b9946f580e5946ae654c0741cf21363521292c
 
 ```
+
+#### Method 2 : From within the IDE
+Open the project in IntelliJ 
+Edit the Run configurations to have paramters 
+Run from within the IDE
 
