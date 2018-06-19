@@ -151,9 +151,49 @@ public class TreeBuilder<T> implements Serializable{
     }
 
 
+    /**
+     * Remove a file from the Merkle tree
+     * Break the file path into strings each representing each file
+     *
+     * @param filename
+     */
+    public void remove(String filename){
+        String[] files = filename.split("/");  //split the filepath into Strings so that each file is its own string
+
+        boolean delete = false;
+        //int i=0;
+        FileNode currentNode = rootNode;
+        while(!currentNode.getChildren().isEmpty()){ //while the current node has children
+            for(FileNode child : currentNode.getChildren()){ //call this method on each child
+                if(child.getFilename().equals(files[files.length-1])){ //if the node is the node of the file to be removed, set a flag to true
+
+                    currentNode.getChildren().remove(child);
+                    if(currentNode.getChildren().isEmpty()){
+                        if(!currentNode.equals(rootNode)){
+                            String filePath = files[0];
+                            for(int i=1; i<files.length-1; i++)
+                                filePath += "/"+ files[i];
+                            System.out.println(filePath);
+                            remove(filePath);
+
+                        }
+                        break;
+
+                    }
 
 
-    public void remove(T node){
+                }
+
+                else{
+                    for(FileNode childOfNode : currentNode.getChildren()){
+                        currentNode = childOfNode;
+                    }
+
+                }
+            }
+
+        }
+
 
     }
 

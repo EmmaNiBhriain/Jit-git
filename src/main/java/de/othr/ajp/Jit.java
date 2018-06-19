@@ -52,10 +52,11 @@ public class Jit {
     }
 
     /**
-     * Remove a file fromm the staging area
+     * Check that a file exists and then call the function in treeBuilder to remove the file from the Merkle Tree
      */
-    public void remove(File filename){
-        if(filename.exists()){
+    public void remove(String filename){
+        File removeFile = new File(filename);
+        if(removeFile.exists()){
             System.out.println("File exists and will be removed from jit");
             treeBuilder.remove(filename);
 
@@ -151,11 +152,16 @@ public class Jit {
             }
             else if(args[0].equals("remove")){
                 System.out.println("remove " + args[1]);
+                jit.remove(args[1]);
+                Serializer serializer = new Serializer();
+                serializer.treeWriter(".jit/staging/staging.ser", treeBuilder.getRootNode());//write the stagingArea object to a file //../../../
+
             }
             else if(args[0].equals("commit")){
                 System.out.println("commit " + args[1]);
 
                 jit.commit(args[1], treeBuilder.getRootNode());
+
             }
             else if(args[0].equals("checkout")){
                 System.out.println("checkout");
