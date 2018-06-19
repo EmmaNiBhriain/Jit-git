@@ -28,7 +28,7 @@ public class Jit {
     public void commit(String comment, FileNode rootNode){
         treeBuilder.setRootNode(rootNode);
 
-        treeBuilder.buildHashes(rootNode, comment); //assign each node in the tree a hashValue
+        treeBuilder.buildHashes(rootNode, comment); //assign each node in the tree a hashValue, construct the content for the files and write them to the .jit/objects folder
     }
 
     /**
@@ -48,7 +48,7 @@ public class Jit {
         catch (IOException e) {
             System.out.println("Error creating directory");
         }
-//
+
     }
 
     /**
@@ -68,7 +68,7 @@ public class Jit {
     }
 
     /**
-     * If a file exists, add it to the staging area to be included in the next commit.
+     * If a file exists, add it to the Merkle Tree that representst the staging area to be included in the next commit.
      */
     public static void add(String filePath){
 
@@ -83,7 +83,7 @@ public class Jit {
 
             treeBuilder = treeBuilder.addToStagingArea(filePath,toBeAdded); //Build a tree using the given filepath
             Serializer serializer = new Serializer();
-            serializer.treeWriter(".jit/staging/staging.ser", treeBuilder.getRootNode());//write the stagingArea object to a file //../../../
+            serializer.treeWriter(".jit/staging/staging.ser", treeBuilder.getRootNode());//write the stagingArea object to a file
 
         }
         else{
@@ -106,16 +106,15 @@ public class Jit {
 
     /**
      * The main method reads the arguments for the jit command and calls the appropriate method
+     * If a Merkle tree has previously existed for this project, read the tree from the staging file, otherwise create a new tree
+     *
      * @param args
      */
     public static void main(String[] args){
 
-//        System.out.println(Paths.get("").toAbsolutePath());
-  //      System.exit(1);
-
-        HashUtil hashUtil = new HashUtil();
-        treeBuilder = new TreeBuilder(hashUtil);
-        File stagingFile = new File(".jit/staging/staging.ser");
+        HashUtil hashUtil = new HashUtil(); //create an instance of the HashUtil class
+        treeBuilder = new TreeBuilder(hashUtil); //create a new TreeBuilder object
+        File stagingFile = new File(".jit/staging/staging.ser"); //set the staging area file
 
         if(stagingFile.exists()){
             Serializer serializer = new Serializer();
@@ -134,9 +133,6 @@ public class Jit {
 
         Jit jit = new Jit(treeBuilder);
 
-        for(int i=0; i<args.length; i++){
-            System.out.println(args[i]);
-        }
 
         if(args.length>0){
             System.out.println(args.length);
@@ -153,6 +149,8 @@ public class Jit {
             else if(args[0].equals("remove")){
                 System.out.println("remove " + args[1]);
                 jit.remove(args[1]);
+
+                //Write the new Merkle tree to the staging file (overwrites the existing tree)
                 Serializer serializer = new Serializer();
                 serializer.treeWriter(".jit/staging/staging.ser", treeBuilder.getRootNode());//write the stagingArea object to a file //../../../
 
@@ -164,11 +162,11 @@ public class Jit {
 
             }
             else if(args[0].equals("checkout")){
-                System.out.println("checkout");
+                System.out.println("checkout - not yet implemented");
             }
 
             else{
-                System.out.println(args[0]);
+                System.out.println("Invalid command " + args[0]);
             }
 
         }

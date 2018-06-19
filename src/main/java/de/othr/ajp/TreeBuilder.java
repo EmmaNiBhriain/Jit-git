@@ -10,12 +10,8 @@ import java.nio.file.Paths;
 public class TreeBuilder<T> implements Serializable{
 
     private transient String rootFilename = ".";
-
     private transient FileNode rootNode; //to keep track of the node at the top of the tree
-
     private transient HashUtil hashUtil;
-
-
     private transient Serializer serializer;
     private static final long serialVersionUID = 1L;
 
@@ -32,13 +28,10 @@ public class TreeBuilder<T> implements Serializable{
 
 
     /**
-     * If there is no file already in the tree: create a new tree and add children to each node
-     * Add each Node to the HashMap containing the filename as a key and the FileNode as a value
+     * Split the filePath into strings for each file in the path and store in the String[] files
+     * Traverse the tree until the child of the node is different to the child of the same file in the filepath
+     * Add the new file to the current node
      *
-     * If adding a node to an existing tree, traverse the tree until the equivalent nodes have different children nodes
-     * Add the new nodes here
-     *
-     * When the leaf node is reached, get the hash of this
      * @param filePath
      * @param toBeAdded
      */
@@ -47,15 +40,12 @@ public class TreeBuilder<T> implements Serializable{
         String contents = "";//serializer.readFile(filePath);
 
         String[] files = filePath.split("/");  //split the filepath into Strings so that each file is its own string
-        for(int i=0; i<files.length; i++) {
-            System.out.println(files[i]);
-        }
 
         FileNode currentNode = rootNode;
         boolean match = false;
 
         int i=0;
-        while(i<files.length){
+        while(i<files.length){ //for each file, if its child matches the equivalent filename from the new file path, continue traversing through the tree and set the current node as the child
             match = false;
             for(FileNode child : currentNode.getChildren()){
                 if(child.getFilename().equals(files[i])){
@@ -70,26 +60,24 @@ public class TreeBuilder<T> implements Serializable{
                 continue;
 
 
+            /**
+             * If the child of the current child is the same as the equivalent file in the filepath, add this file as a child of the current node
+             */
             FileNode child = new FileNode(files[i]);
             currentNode.getChildren().add(child);
             child.setFilepath(filePath);
             currentNode = child;
             i++;
-
-
         }
-
         return this;
     }
 
 
     /**
      * Get the hash of each node in the tree
-     * The nodes of files already had their hashes computed when added to the tree
-     * If a node does not have a hash and hash one child that is not a leaf, call this function of its child
-     * If a node has no hash and has one child that is a leaf, create the hash by adding the word Directory followed by File followed by the name of the child
-     * TODO cater for if a node has multiple children
-     * TODO change Directory + file and directory + directory to directory + type and remove the isLeaf check, just check if the node has a hash
+     * For leaf nodes, i.e. files, get the hash of the contents read from the file and write the contents to a file with the hash of the contents as a name
+     * For directory nodes, build the contents based on the hashes of its child(ren) and write to file in .jit/objects
+     * In the case of the rootNode, also add the commit message
      *
      * @param fileNode
      */
@@ -116,14 +104,16 @@ public class TreeBuilder<T> implements Serializable{
 
             String contents = "";
             if(fileNode.equals(rootNode)){
-                contents = "Commit " + message + "\n";
+                contents = "Commit " + message + "\n"; //The root node (".") has the commit message added to the contents of the file
             }
-            else
+            else //contruct the contents of the file representing the directory
                 contents = "Directory \n";
             String type = "";
-            for (FileNode child : fileNode.getChildren()) {
+            for (FileNode child : fileNode.getChildren()) { //get the hash of each child
 
                 buildHashes(child, message);
+
+                //Contruct the contents of the file
                 if (child.isLeaf()) {
                     type = "File";
                 } else {
@@ -133,9 +123,13 @@ public class TreeBuilder<T> implements Serializable{
 
             }
 
+            //get the hash of the contents
             String hash = hashUtil.byteArrayToHexString(contents.getBytes());
             fileNode.setHashOfNode(hash);
 
+            /**
+             * Write contents to file with the hash as its name
+             */
             try {
                 String fileName = ".jit/objects/" + hash;
                 Files.createFile(Paths.get(fileName));
@@ -165,9 +159,12 @@ public class TreeBuilder<T> implements Serializable{
         FileNode currentNode = rootNode;
         while(!currentNode.getChildren().isEmpty()){ //while the current node has children
             for(FileNode child : currentNode.getChildren()){ //call this method on each child
-                if(child.getFilename().equals(files[files.length-1])){ //if the node is the node of the file to be removed, set a flag to true
+                if(child.getFilename().equals(files[files.length-1])){
 
                     currentNode.getChildren().remove(child);
+                    /**
+                     * After removing the child, if the node has no more children, recursively remove the file until all nodes with no children are removed
+                     */
                     if(currentNode.getChildren().isEmpty()){
                         if(!currentNode.equals(rootNode)){
                             String filePath = files[0];

@@ -11,22 +11,31 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Object that will be store in the Merkle Tree.
+ * Every file that is added to the tree will have a FileNode object created for it
+ */
+
 public class FileNode implements Serializable{
 
     private static final long serialVersionUID = 2L;
-    private String filename;
-    private ArrayList<FileNode> children = new ArrayList<>();
-    private String hashOfNode = ""; //the SHA-1 hash of the file that will be added to the 'staging area'
+    private String filename; //name of the file, example: test1.txt
+    private ArrayList<FileNode> children = new ArrayList<>(); //ArrayList of children of the node
+    private String hashOfNode = ""; //the SHA-1 hash of the file
+    private String filepath; //the full path to the file
 
-
-    private String filepath;
-
+    /**
+     * Constructor for the FileNode
+     * @param filename is used to assign the filename. Every other field is optional or static and can therefore be set separately
+     */
     public FileNode(String filename){
-
         this.filename = filename;
-
     }
 
+    /**
+     * Check if a Node has any children, if not, it is a leaf
+     * @return
+     */
     public boolean isLeaf(){
         if(children.isEmpty()){
             return true;
@@ -34,6 +43,7 @@ public class FileNode implements Serializable{
         else
             return false;
     }
+
 
     public String getFilename() {
         return filename;
