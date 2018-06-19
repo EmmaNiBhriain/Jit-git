@@ -119,7 +119,7 @@ public class TreeBuilder<T> implements Serializable{
                 contents = "Commit " + message + "\n";
             }
             else
-                contents = "Directory \n ";
+                contents = "Directory \n";
             String type = "";
             for (FileNode child : fileNode.getChildren()) {
 
@@ -130,7 +130,7 @@ public class TreeBuilder<T> implements Serializable{
                     type = "Directory";
                 }
                 contents += type + " " + child.getHashOfNode() + " " + child.getFilename() + "\n";
-                
+
             }
 
             String hash = hashUtil.byteArrayToHexString(contents.getBytes());

@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Class used for writing objects to a file
@@ -33,10 +34,22 @@ public class Serializer<T> {
 
         ObjectOutputStream out;
         try{
-            out = new ObjectOutputStream(new FileOutputStream(new File(filename)));
+
+            FileWriter fw = new FileWriter(filename);
+            BufferedWriter bw = new BufferedWriter(fw);
+            Scanner scanner = new Scanner(fileContents);
+
+            while(scanner.hasNext()) {
+                bw.write(scanner.nextLine());
+                bw.newLine();
+                bw.flush();
+            }
+            bw.close();
+
+           /* out = new ObjectOutputStream(new FileOutputStream(new File(filename)));
             out.writeObject(fileContents);
             System.out.println("Object written successfully to file");
-            out.close();
+            out.close();*/
         }
         catch (IOException e){
             System.out.println("Could not write to file" + e);
