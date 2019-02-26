@@ -3,6 +3,8 @@
 ## Description
 This program is a version control program based on git. This Java program is designed to be run from the command prompt. Functionality includes initialisiing a repository, adding files to a 'staging area', committing these files by adding to the .jit/objects directory and returning to an earlier version of the files. 
 
+* Please Note: The jar file included in the target folder was compiled with Java 9.
+
 ## Instructions
 
 #### Method 1 : With Maven installed 
